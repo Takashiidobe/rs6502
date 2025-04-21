@@ -46,6 +46,14 @@
 - [x] TXA (Transfer X to A)
 - [x] TYA (Transfer Y to A)
 
+#### Stack Operations
+- [X] PHA (Push Accumulator)
+- [X] PHP (Push Processor Status)
+- [X] PLA (Pull Accumulator)
+- [X] PLP (Pull Processor Status)
+- [X] TSX (Transfer Stack Pointer to X)
+- [X] TXS (Transfer X to Stack Pointer)
+
 #### System
 - [x] BRK (Force Break)
 
@@ -80,14 +88,6 @@
 - [ ] LSR (Logical Shift Right)
 - [ ] ROL (Rotate Left)
 - [ ] ROR (Rotate Right)
-
-#### Stack Operations
-- [ ] PHA (Push Accumulator)
-- [ ] PHP (Push Processor Status)
-- [ ] PLA (Pull Accumulator)
-- [ ] PLP (Pull Processor Status)
-- [ ] TSX (Transfer Stack Pointer to X)
-- [ ] TXS (Transfer X to Stack Pointer)
 
 #### Status Flag Changes
 - [ ] CLC (Clear Carry)

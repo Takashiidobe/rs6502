@@ -139,6 +139,31 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0x98, mode: AddressingMode::Implied, bytes: 1 },
     ]);
 
+    // Stack Operations
+    map.insert("TSX", vec![
+        Instruction { opcode: 0xBA, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("TXS", vec![
+        Instruction { opcode: 0x9A, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("PHA", vec![
+        Instruction { opcode: 0x48, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("PHP", vec![
+        Instruction { opcode: 0x08, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("PLA", vec![
+        Instruction { opcode: 0x68, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("PLP", vec![
+        Instruction { opcode: 0x28, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+
     map
 }
 

@@ -147,6 +147,28 @@ impl CPU {
                 self.set_zero_flag(self.a);
                 self.set_negative_flag(self.a);
             }
+            0xBA => { // TSX
+                self.x = self.sp;
+                self.set_zero_flag(self.x);
+                self.set_negative_flag(self.x);
+            }
+            0x9A => { // TXS
+                self.sp = self.x;
+            }
+            0x48 => { // PHA
+                self.push(self.a);
+            }
+            0x08 => { // PHP
+                self.push(self.status | 0b0011_0000); // Set bits 4 and 5 when pushing
+            }
+            0x68 => { // PLA
+                self.a = self.pull();
+                self.set_zero_flag(self.a);
+                self.set_negative_flag(self.a);
+            }
+            0x28 => { // PLP
+                self.status = (self.pull() & 0b1110_1111) | 0b0010_0000; // Keep bit 5 set, ignore bit 4
+            }
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
@@ -285,5 +307,16 @@ impl CPU {
 
     pub fn get_carry_flag(&self) -> bool {
         self.status & 0b0000_0001 != 0
+    }
+
+    // Add these new helper methods for stack operations
+    fn push(&mut self, value: u8) {
+        self.memory.write(0x0100 + self.sp as u16, value);
+        self.sp = self.sp.wrapping_sub(1);
+    }
+
+    fn pull(&mut self) -> u8 {
+        self.sp = self.sp.wrapping_add(1);
+        self.memory.read(0x0100 + self.sp as u16)
     }
 }
