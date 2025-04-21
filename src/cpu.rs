@@ -127,6 +127,26 @@ impl CPU {
                 let value = self.memory.read(addr);
                 self.ldx(value);
             }
+            0xAA => { // TAX
+                self.x = self.a;
+                self.set_zero_flag(self.x);
+                self.set_negative_flag(self.x);
+            }
+            0xA8 => { // TAY
+                self.y = self.a;
+                self.set_zero_flag(self.y);
+                self.set_negative_flag(self.y);
+            }
+            0x8A => { // TXA
+                self.a = self.x;
+                self.set_zero_flag(self.a);
+                self.set_negative_flag(self.a);
+            }
+            0x98 => { // TYA
+                self.a = self.y;
+                self.set_zero_flag(self.a);
+                self.set_negative_flag(self.a);
+            }
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;

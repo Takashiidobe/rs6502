@@ -40,6 +40,12 @@
 - [x] BEQ (Branch if Equal)
 - [x] BNE (Branch if Not Equal)
 
+#### Register Transfers
+- [x] TAX (Transfer A to X)
+- [x] TAY (Transfer A to Y)
+- [x] TXA (Transfer X to A)
+- [x] TYA (Transfer Y to A)
+
 #### System
 - [x] BRK (Force Break)
 
@@ -82,12 +88,6 @@
 - [ ] PLP (Pull Processor Status)
 - [ ] TSX (Transfer Stack Pointer to X)
 - [ ] TXS (Transfer X to Stack Pointer)
-
-#### Register Transfers
-- [ ] TAX (Transfer A to X)
-- [ ] TAY (Transfer A to Y)
-- [ ] TXA (Transfer X to A)
-- [ ] TYA (Transfer Y to A)
 
 #### Status Flag Changes
 - [ ] CLC (Clear Carry)

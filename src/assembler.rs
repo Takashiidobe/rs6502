@@ -122,6 +122,23 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0x00, mode: AddressingMode::Implied, bytes: 1 },
     ]);
 
+    // Register Transfers
+    map.insert("TAX", vec![
+        Instruction { opcode: 0xAA, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("TAY", vec![
+        Instruction { opcode: 0xA8, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("TXA", vec![
+        Instruction { opcode: 0x8A, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+    
+    map.insert("TYA", vec![
+        Instruction { opcode: 0x98, mode: AddressingMode::Implied, bytes: 1 },
+    ]);
+
     map
 }
 
