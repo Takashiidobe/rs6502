@@ -238,9 +238,50 @@ impl CPU {
                 let jump_addr = ((self.pc as i32) + (offset as i32)) as u16; // Calculate new address
                 self.pc = jump_addr; // Update program counter
             }
-            0x29 | 0x25 | 0x35 | 0x2D | 0x3D | 0x39 | 0x21 | 0x31 => self.and(&self.decode_addressing_mode(opcode)),
-            0x09 | 0x05 | 0x15 | 0x0D | 0x1D | 0x19 | 0x01 | 0x11 => self.ora(&self.decode_addressing_mode(opcode)),
-            0x49 | 0x45 | 0x55 | 0x4D | 0x5D | 0x59 | 0x41 | 0x51 => self.eor(&self.decode_addressing_mode(opcode)),
+            0x29 => self.and(&AddressingMode::Immediate),
+            0x25 => self.and(&AddressingMode::ZeroPage),
+            0x35 => self.and(&AddressingMode::ZeroPageX),
+            0x2D => self.and(&AddressingMode::Absolute),
+            0x3D => self.and(&AddressingMode::AbsoluteX),
+            0x39 => self.and(&AddressingMode::AbsoluteY),
+            0x21 => self.and(&AddressingMode::IndirectX),
+            0x31 => self.and(&AddressingMode::IndirectY),
+            0x09 => self.ora(&AddressingMode::Immediate),
+            0x05 => self.ora(&AddressingMode::ZeroPage),
+            0x15 => self.ora(&AddressingMode::ZeroPageX),
+            0x0D => self.ora(&AddressingMode::Absolute),
+            0x1D => self.ora(&AddressingMode::AbsoluteX),
+            0x19 => self.ora(&AddressingMode::AbsoluteY),
+            0x01 => self.ora(&AddressingMode::IndirectX),
+            0x11 => self.ora(&AddressingMode::IndirectY),
+            0x49 => self.eor(&AddressingMode::Immediate),
+            0x45 => self.eor(&AddressingMode::ZeroPage),
+            0x55 => self.eor(&AddressingMode::ZeroPageX),
+            0x4D => self.eor(&AddressingMode::Absolute),
+            0x5D => self.eor(&AddressingMode::AbsoluteX),
+            0x59 => self.eor(&AddressingMode::AbsoluteY),
+            0x41 => self.eor(&AddressingMode::IndirectX),
+            0x51 => self.eor(&AddressingMode::IndirectY),
+            0x0A => self.asl_accumulator(),
+            0x06 => self.asl(&AddressingMode::ZeroPage),
+            0x16 => self.asl(&AddressingMode::ZeroPageX),
+            0x0E => self.asl(&AddressingMode::Absolute),
+            0x1E => self.asl(&AddressingMode::AbsoluteX),
+            0x4A => self.lsr_accumulator(),
+            0x46 => self.lsr(&AddressingMode::ZeroPage),
+            0x56 => self.lsr(&AddressingMode::ZeroPageX),
+            0x4E => self.lsr(&AddressingMode::Absolute),
+            0x5E => self.lsr(&AddressingMode::AbsoluteX),
+            0x2A => self.rol_accumulator(),
+            0x26 => self.rol(&AddressingMode::ZeroPage),
+            0x36 => self.rol(&AddressingMode::ZeroPageX),
+            0x2E => self.rol(&AddressingMode::Absolute),
+            0x3E => self.rol(&AddressingMode::AbsoluteX),
+            0x6A => self.ror_accumulator(),
+            0x66 => self.ror(&AddressingMode::ZeroPage),
+            0x76 => self.ror(&AddressingMode::ZeroPageX),
+            0x6E => self.ror(&AddressingMode::Absolute),
+            0x7E => self.ror(&AddressingMode::AbsoluteX),
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
@@ -279,18 +320,68 @@ impl CPU {
         self.update_zero_and_negative_flags(self.a);
     }
 
-    fn decode_addressing_mode(&self, opcode: u8) -> AddressingMode {
-        match opcode {
-            0x29 | 0x09 | 0x49 => AddressingMode::Immediate,
-            0x25 | 0x05 | 0x45 => AddressingMode::ZeroPage,
-            0x35 | 0x15 | 0x55 => AddressingMode::ZeroPageX,
-            0x2D | 0x0D | 0x4D => AddressingMode::Absolute,
-            0x3D | 0x1D | 0x5D => AddressingMode::AbsoluteX,
-            0x39 | 0x19 | 0x59 => AddressingMode::AbsoluteY,
-            0x21 | 0x01 | 0x41 => AddressingMode::IndirectX,
-            0x31 | 0x11 | 0x51 => AddressingMode::IndirectY,
-            _ => panic!("Unsupported opcode for logical operations"),
-        }
+    fn asl(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        self.set_carry_flag(value & 0x80 != 0);
+        let result = value << 1;
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn asl_accumulator(&mut self) {
+        self.set_carry_flag(self.a & 0x80 != 0);
+        self.a <<= 1;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn lsr(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        self.set_carry_flag(value & 0x01 != 0);
+        let result = value >> 1;
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn lsr_accumulator(&mut self) {
+        self.set_carry_flag(self.a & 0x01 != 0);
+        self.a >>= 1;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn rol(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        let carry = self.get_carry_flag() as u8;
+        self.set_carry_flag(value & 0x80 != 0);
+        let result = (value << 1) | carry;
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn rol_accumulator(&mut self) {
+        let carry = self.get_carry_flag() as u8;
+        self.set_carry_flag(self.a & 0x80 != 0);
+        self.a = (self.a << 1) | carry;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn ror(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        let carry = self.get_carry_flag() as u8;
+        self.set_carry_flag(value & 0x01 != 0);
+        let result = (value >> 1) | (carry << 7);
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn ror_accumulator(&mut self) {
+        let carry = self.get_carry_flag() as u8;
+        self.set_carry_flag(self.a & 0x01 != 0);
+        self.a = (self.a >> 1) | (carry << 7);
+        self.update_zero_and_negative_flags(self.a);
     }
 }
 

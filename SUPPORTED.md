@@ -104,6 +104,12 @@
 - [x] ORA (Logical OR)
 - [x] EOR (Exclusive OR)
 
+#### Shifts and Rotates
+- [x] ASL (Arithmetic Shift Left)
+- [x] LSR (Logical Shift Right)
+- [x] ROL (Rotate Left)
+- [x] ROR (Rotate Right)
+
 ## Features To Be Implemented
 
 ### Addressing Modes
@@ -116,12 +122,6 @@
 - [ ] Relative addressing for all branch instructions
 
 ### Instructions
-
-#### Shifts and Rotates
-- [ ] ASL (Arithmetic Shift Left)
-- [ ] LSR (Logical Shift Right)
-- [ ] ROL (Rotate Left)
-- [ ] ROR (Rotate Right)
 
 #### Status Flag Changes
 - [ ] CLC (Clear Carry)

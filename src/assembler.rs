@@ -232,6 +232,42 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0x41, mode: AddressingMode::IndirectX, bytes: 2 },
         Instruction { opcode: 0x51, mode: AddressingMode::IndirectY, bytes: 2 },
     ]);
+
+    // ASL (Arithmetic Shift Left)
+    map.insert("ASL", vec![
+        Instruction { opcode: 0x0A, mode: AddressingMode::Implied, bytes: 1 },
+        Instruction { opcode: 0x06, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x16, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x0E, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x1E, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
+
+    // LSR (Logical Shift Right)
+    map.insert("LSR", vec![
+        Instruction { opcode: 0x4A, mode: AddressingMode::Implied, bytes: 1 },
+        Instruction { opcode: 0x46, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x56, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x4E, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x5E, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
+
+    // ROL (Rotate Left)
+    map.insert("ROL", vec![
+        Instruction { opcode: 0x2A, mode: AddressingMode::Implied, bytes: 1 },
+        Instruction { opcode: 0x26, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x36, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x2E, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x3E, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
+
+    // ROR (Rotate Right)
+    map.insert("ROR", vec![
+        Instruction { opcode: 0x6A, mode: AddressingMode::Implied, bytes: 1 },
+        Instruction { opcode: 0x66, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x76, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x6E, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x7E, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
     
     map
 }
