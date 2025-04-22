@@ -275,6 +275,15 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0x6E, mode: AddressingMode::Absolute, bytes: 3 },
         Instruction { opcode: 0x7E, mode: AddressingMode::AbsoluteX, bytes: 3 },
     ]);
+
+    // Status Flag Changes
+    map.insert("CLC", vec![Instruction { opcode: 0x18, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("CLD", vec![Instruction { opcode: 0xD8, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("CLI", vec![Instruction { opcode: 0x58, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("CLV", vec![Instruction { opcode: 0xB8, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("SEC", vec![Instruction { opcode: 0x38, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("SED", vec![Instruction { opcode: 0xF8, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("SEI", vec![Instruction { opcode: 0x78, mode: AddressingMode::Implied, bytes: 1 }]);
     
     map
 }

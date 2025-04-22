@@ -118,6 +118,15 @@
 - [x] BVC (Branch if Overflow Clear)
 - [x] BVS (Branch if Overflow Set)
 
+#### Status Flag Changes
+- [x] CLC (Clear Carry)
+- [x] CLD (Clear Decimal)
+- [x] CLI (Clear Interrupt)
+- [x] CLV (Clear Overflow)
+- [x] SEC (Set Carry)
+- [x] SED (Set Decimal)
+- [x] SEI (Set Interrupt)
+
 ## Features To Be Implemented
 
 ### Addressing Modes
@@ -130,16 +139,6 @@
 - [ ] Relative addressing for all branch instructions
 
 ### Instructions
-
-#### Status Flag Changes
-- [ ] CLC (Clear Carry)
-- [ ] CLD (Clear Decimal)
-- [ ] CLI (Clear Interrupt)
-- [ ] CLV (Clear Overflow)
-- [ ] SEC (Set Carry)
-- [ ] SED (Set Decimal)
-- [ ] SEI (Set Interrupt)
-
 
 #### Jump & Call Operations
 - [ ] JMP (Jump)

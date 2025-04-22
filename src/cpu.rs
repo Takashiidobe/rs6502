@@ -289,6 +289,14 @@ impl CPU {
             0x10 => self.branch(!self.get_negative_flag()), // BPL (Branch if Plus)
             0x50 => self.branch(!self.get_overflow_flag()), // BVC (Branch if Overflow Clear)
             0x70 => self.branch(self.get_overflow_flag()), // BVS (Branch if Overflow Set)
+            // Status Flag Changes
+            0x18 => self.clear_carry(),       // CLC
+            0xD8 => self.clear_decimal(),    // CLD
+            0x58 => self.clear_interrupt(),  // CLI
+            0xB8 => self.clear_overflow(),   // CLV
+            0x38 => self.set_carry(),        // SEC
+            0xF8 => self.set_decimal(),      // SED
+            0x78 => self.set_interrupt(),    // SEI
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
@@ -399,6 +407,34 @@ impl CPU {
         } else {
             self.pc += 1; // Skip the offset byte
         }
+    }
+
+    fn clear_carry(&mut self) {
+        self.set_carry_flag(false);
+    }
+
+    fn clear_decimal(&mut self) {
+        self.set_decimal_flag(false);
+    }
+
+    fn clear_interrupt(&mut self) {
+        self.set_interrupt_disable_flag(false);
+    }
+
+    fn clear_overflow(&mut self) {
+        self.set_overflow_flag(false);
+    }
+
+    fn set_carry(&mut self) {
+        self.set_carry_flag(true);
+    }
+
+    fn set_decimal(&mut self) {
+        self.set_decimal_flag(true);
+    }
+
+    fn set_interrupt(&mut self) {
+        self.set_interrupt_disable_flag(true);
     }
 }
 
