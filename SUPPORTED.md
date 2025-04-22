@@ -13,18 +13,40 @@
 - [x] LDA (Load Accumulator)
   - [x] Immediate
   - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
+  - [x] Absolute,X
+  - [x] Absolute,Y
+  - [x] Indirect,X
+  - [x] Indirect,Y
 - [x] LDX (Load X Register)
   - [x] Immediate
   - [x] Zero Page
+  - [x] Zero Page,Y
+  - [x] Absolute
+  - [x] Absolute,Y
 - [x] LDY (Load Y Register)
   - [x] Immediate
   - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
+  - [x] Absolute,X
 - [x] STA (Store Accumulator)
   - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
+  - [x] Absolute,X
+  - [x] Absolute,Y
+  - [x] Indirect,X
+  - [x] Indirect,Y
 - [x] STX (Store X Register)
   - [x] Zero Page
+  - [x] Zero Page,Y
+  - [x] Absolute
 - [x] STY (Store Y Register)
   - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
 
 #### Arithmetic
 - [x] ADC (Add with Carry)
@@ -77,6 +99,11 @@
 - [x] DEX (Decrement X)
 - [x] DEY (Decrement Y)
 
+#### Logical Operations
+- [x] AND (Logical AND)
+- [x] ORA (Logical OR)
+- [x] EOR (Exclusive OR)
+
 ## Features To Be Implemented
 
 ### Addressing Modes
@@ -89,11 +116,6 @@
 - [ ] Relative addressing for all branch instructions
 
 ### Instructions
-
-#### Logical Operations
-- [ ] AND (Logical AND)
-- [ ] ORA (Logical OR)
-- [ ] EOR (Exclusive OR)
 
 #### Shifts and Rotates
 - [ ] ASL (Arithmetic Shift Left)

@@ -196,6 +196,42 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     map.insert("INY", vec![Instruction { opcode: 0xC8, mode: AddressingMode::Implied, bytes: 1 }]);
     map.insert("DEX", vec![Instruction { opcode: 0xCA, mode: AddressingMode::Implied, bytes: 1 }]);
     map.insert("DEY", vec![Instruction { opcode: 0x88, mode: AddressingMode::Implied, bytes: 1 }]);
+
+    // AND (Logical AND)
+    map.insert("AND", vec![
+        Instruction { opcode: 0x29, mode: AddressingMode::Immediate, bytes: 2 },
+        Instruction { opcode: 0x25, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x35, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x2D, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x3D, mode: AddressingMode::AbsoluteX, bytes: 3 },
+        Instruction { opcode: 0x39, mode: AddressingMode::AbsoluteY, bytes: 3 },
+        Instruction { opcode: 0x21, mode: AddressingMode::IndirectX, bytes: 2 },
+        Instruction { opcode: 0x31, mode: AddressingMode::IndirectY, bytes: 2 },
+    ]);
+
+    // ORA (Logical OR)
+    map.insert("ORA", vec![
+        Instruction { opcode: 0x09, mode: AddressingMode::Immediate, bytes: 2 },
+        Instruction { opcode: 0x05, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x15, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x0D, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x1D, mode: AddressingMode::AbsoluteX, bytes: 3 },
+        Instruction { opcode: 0x19, mode: AddressingMode::AbsoluteY, bytes: 3 },
+        Instruction { opcode: 0x01, mode: AddressingMode::IndirectX, bytes: 2 },
+        Instruction { opcode: 0x11, mode: AddressingMode::IndirectY, bytes: 2 },
+    ]);
+
+    // EOR (Exclusive OR)
+    map.insert("EOR", vec![
+        Instruction { opcode: 0x49, mode: AddressingMode::Immediate, bytes: 2 },
+        Instruction { opcode: 0x45, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0x55, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0x4D, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0x5D, mode: AddressingMode::AbsoluteX, bytes: 3 },
+        Instruction { opcode: 0x59, mode: AddressingMode::AbsoluteY, bytes: 3 },
+        Instruction { opcode: 0x41, mode: AddressingMode::IndirectX, bytes: 2 },
+        Instruction { opcode: 0x51, mode: AddressingMode::IndirectY, bytes: 2 },
+    ]);
     
     map
 }

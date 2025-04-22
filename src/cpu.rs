@@ -41,14 +41,103 @@ impl CPU {
         self.pc += 1;
 
         match opcode {
-            0xA9 => { // LDA Immediate
-                let value = self.memory.read(self.pc);
-                self.pc += 1;
-                println!("Loading value ${:02X} into accumulator", value);
-                self.a = value;
-                self.set_zero_flag(self.a);
-                self.set_negative_flag(self.a);
+            // LDA (Load Accumulator)
+            0xA9 => {
+                let value = self.get_operand(&AddressingMode::Immediate);
+                self.lda(value);
             }
+            0xA5 => {
+                let value = self.get_operand(&AddressingMode::ZeroPage);
+                self.lda(value);
+            }
+            0xB5 => {
+                let value = self.get_operand(&AddressingMode::ZeroPageX);
+                self.lda(value);
+            }
+            0xAD => {
+                let value = self.get_operand(&AddressingMode::Absolute);
+                self.lda(value);
+            }
+            0xBD => {
+                let value = self.get_operand(&AddressingMode::AbsoluteX);
+                self.lda(value);
+            }
+            0xB9 => {
+                let value = self.get_operand(&AddressingMode::AbsoluteY);
+                self.lda(value);
+            }
+            0xA1 => {
+                let value = self.get_operand(&AddressingMode::IndirectX);
+                self.lda(value);
+            }
+            0xB1 => {
+                let value = self.get_operand(&AddressingMode::IndirectY);
+                self.lda(value);
+            }
+
+            // LDX (Load X Register)
+            0xA2 => {
+                let value = self.get_operand(&AddressingMode::Immediate);
+                self.ldx(value);
+            }
+            0xA6 => {
+                let value = self.get_operand(&AddressingMode::ZeroPage);
+                self.ldx(value);
+            }
+            0xB6 => {
+                let value = self.get_operand(&AddressingMode::ZeroPageY);
+                self.ldx(value);
+            }
+            0xAE => {
+                let value = self.get_operand(&AddressingMode::Absolute);
+                self.ldx(value);
+            }
+            0xBE => {
+                let value = self.get_operand(&AddressingMode::AbsoluteY);
+                self.ldx(value);
+            }
+
+            // LDY (Load Y Register)
+            0xA0 => {
+                let value = self.get_operand(&AddressingMode::Immediate);
+                self.ldy(value);
+            }
+            0xA4 => {
+                let value = self.get_operand(&AddressingMode::ZeroPage);
+                self.ldy(value);
+            }
+            0xB4 => {
+                let value = self.get_operand(&AddressingMode::ZeroPageX);
+                self.ldy(value);
+            }
+            0xAC => {
+                let value = self.get_operand(&AddressingMode::Absolute);
+                self.ldy(value);
+            }
+            0xBC => {
+                let value = self.get_operand(&AddressingMode::AbsoluteX);
+                self.ldy(value);
+            }
+
+            // STA (Store Accumulator)
+            0x85 => self.sta(self.get_operand_address(&AddressingMode::ZeroPage)),
+            0x95 => self.sta(self.get_operand_address(&AddressingMode::ZeroPageX)),
+            0x8D => self.sta(self.get_operand_address(&AddressingMode::Absolute)),
+            0x9D => self.sta(self.get_operand_address(&AddressingMode::AbsoluteX)),
+            0x99 => self.sta(self.get_operand_address(&AddressingMode::AbsoluteY)),
+            0x81 => self.sta(self.get_operand_address(&AddressingMode::IndirectX)),
+            0x91 => self.sta(self.get_operand_address(&AddressingMode::IndirectY)),
+
+            // STX (Store X Register)
+            0x86 => self.stx(self.get_operand_address(&AddressingMode::ZeroPage)),
+            0x96 => self.stx(self.get_operand_address(&AddressingMode::ZeroPageY)),
+            0x8E => self.stx(self.get_operand_address(&AddressingMode::Absolute)),
+
+            // STY (Store Y Register)
+            0x84 => self.sty(self.get_operand_address(&AddressingMode::ZeroPage)),
+            0x94 => self.sty(self.get_operand_address(&AddressingMode::ZeroPageX)),
+            0x8C => self.sty(self.get_operand_address(&AddressingMode::Absolute)),
+
             0x69 => self.adc(&AddressingMode::Immediate),
             0x65 => self.adc(&AddressingMode::ZeroPage),
             0x75 => self.adc(&AddressingMode::ZeroPageX),
@@ -80,49 +169,6 @@ impl CPU {
             0x00 => { // BRK
                 self.set_break_flag(true);
                 self.halted = true;
-            }
-            0xA2 => { // LDX Immediate
-                let value = self.memory.read(self.pc);
-                self.pc += 1;
-                self.ldx(value);
-            }
-            0xA0 => { // LDY Immediate
-                let value = self.memory.read(self.pc);
-                self.pc += 1;
-                self.ldy(value);
-            }
-            0x86 => { // STX ZeroPage
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                self.stx(addr);
-            }
-            0x84 => { // STY ZeroPage
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                self.sty(addr);
-            }
-            0x85 => { // STA Zero Page
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                self.sta(addr);
-            }
-            0xA5 => { // LDA Zero Page
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                let value = self.memory.read(addr);
-                self.lda(value);
-            }
-            0xA4 => { // LDY Zero Page
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                let value = self.memory.read(addr);
-                self.ldy(value);
-            }
-            0xA6 => { // LDX Zero Page
-                let addr = self.memory.read(self.pc) as u16;
-                self.pc += 1;
-                let value = self.memory.read(addr);
-                self.ldx(value);
             }
             0xAA => { // TAX
                 self.x = self.a;
@@ -192,6 +238,9 @@ impl CPU {
                 let jump_addr = ((self.pc as i32) + (offset as i32)) as u16; // Calculate new address
                 self.pc = jump_addr; // Update program counter
             }
+            0x29 | 0x25 | 0x35 | 0x2D | 0x3D | 0x39 | 0x21 | 0x31 => self.and(&self.decode_addressing_mode(opcode)),
+            0x09 | 0x05 | 0x15 | 0x0D | 0x1D | 0x19 | 0x01 | 0x11 => self.ora(&self.decode_addressing_mode(opcode)),
+            0x49 | 0x45 | 0x55 | 0x4D | 0x5D | 0x59 | 0x41 | 0x51 => self.eor(&self.decode_addressing_mode(opcode)),
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
@@ -210,6 +259,38 @@ impl CPU {
         
         self.a = result;
         self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn and(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
+        self.a &= value;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn ora(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
+        self.a |= value;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn eor(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
+        self.a ^= value;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn decode_addressing_mode(&self, opcode: u8) -> AddressingMode {
+        match opcode {
+            0x29 | 0x09 | 0x49 => AddressingMode::Immediate,
+            0x25 | 0x05 | 0x45 => AddressingMode::ZeroPage,
+            0x35 | 0x15 | 0x55 => AddressingMode::ZeroPageX,
+            0x2D | 0x0D | 0x4D => AddressingMode::Absolute,
+            0x3D | 0x1D | 0x5D => AddressingMode::AbsoluteX,
+            0x39 | 0x19 | 0x59 => AddressingMode::AbsoluteY,
+            0x21 | 0x01 | 0x41 => AddressingMode::IndirectX,
+            0x31 | 0x11 | 0x51 => AddressingMode::IndirectY,
+            _ => panic!("Unsupported opcode for logical operations"),
+        }
     }
 }
 
