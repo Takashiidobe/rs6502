@@ -2,7 +2,7 @@ use std::collections::HashMap;
 
 // Addressing modes
 #[derive(Debug, PartialEq)]
-enum AddressingMode {
+pub enum AddressingMode {
     Implied,
     Immediate,
     ZeroPage,
@@ -16,7 +16,7 @@ enum AddressingMode {
     IndirectY,
 }
 
-struct Instruction {
+pub struct Instruction {
     opcode: u8,
     mode: AddressingMode,
     bytes: u8,
@@ -164,6 +164,39 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0x28, mode: AddressingMode::Implied, bytes: 1 },
     ]);
 
+    // SBC
+    map.insert("SBC", vec![
+        Instruction { opcode: 0xE9, mode: AddressingMode::Immediate, bytes: 2 },
+        Instruction { opcode: 0xE5, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0xF5, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0xED, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0xFD, mode: AddressingMode::AbsoluteX, bytes: 3 },
+        Instruction { opcode: 0xF9, mode: AddressingMode::AbsoluteY, bytes: 3 },
+        Instruction { opcode: 0xE1, mode: AddressingMode::IndirectX, bytes: 2 },
+        Instruction { opcode: 0xF1, mode: AddressingMode::IndirectY, bytes: 2 },
+    ]);
+
+    // INC/DEC
+    map.insert("INC", vec![
+        Instruction { opcode: 0xE6, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0xF6, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0xEE, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0xFE, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
+    
+    map.insert("DEC", vec![
+        Instruction { opcode: 0xC6, mode: AddressingMode::ZeroPage, bytes: 2 },
+        Instruction { opcode: 0xD6, mode: AddressingMode::ZeroPageX, bytes: 2 },
+        Instruction { opcode: 0xCE, mode: AddressingMode::Absolute, bytes: 3 },
+        Instruction { opcode: 0xDE, mode: AddressingMode::AbsoluteX, bytes: 3 },
+    ]);
+
+    // Single byte instructions
+    map.insert("INX", vec![Instruction { opcode: 0xE8, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("INY", vec![Instruction { opcode: 0xC8, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("DEX", vec![Instruction { opcode: 0xCA, mode: AddressingMode::Implied, bytes: 1 }]);
+    map.insert("DEY", vec![Instruction { opcode: 0x88, mode: AddressingMode::Implied, bytes: 1 }]);
+    
     map
 }
 

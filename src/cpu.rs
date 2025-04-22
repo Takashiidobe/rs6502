@@ -1,4 +1,6 @@
 use crate::memory::Memory;
+use crate::assembler::AddressingMode;
+
 
 pub struct CPU {
     pub a: u8, // Accumulator
@@ -47,19 +49,14 @@ impl CPU {
                 self.set_zero_flag(self.a);
                 self.set_negative_flag(self.a);
             }
-            0x69 => { // ADC Immediate
-                let value = self.memory.read(self.pc);
-                self.pc += 1;
-                let carry = self.get_carry_flag() as u16; 
-                let sum = self.a as u16 + value as u16 + carry;
-                self.set_carry_flag(sum > 0xFF);
-                let result = sum as u8;
-                // Set overflow flag if sign bit changes unexpectedly
-                self.set_overflow_flag(((self.a ^ result) & (value ^ result) & 0x80) != 0);
-                self.a = result;
-                self.set_zero_flag(self.a);
-                self.set_negative_flag(self.a);
-            }
+            0x69 => self.adc(&AddressingMode::Immediate),
+            0x65 => self.adc(&AddressingMode::ZeroPage),
+            0x75 => self.adc(&AddressingMode::ZeroPageX),
+            0x6D => self.adc(&AddressingMode::Absolute),
+            0x7D => self.adc(&AddressingMode::AbsoluteX),
+            0x79 => self.adc(&AddressingMode::AbsoluteY),
+            0x61 => self.adc(&AddressingMode::IndirectX),
+            0x71 => self.adc(&AddressingMode::IndirectY),
             0xC9 => { // CMP Immediate
                 let value = self.memory.read(self.pc);
                 self.pc += 1;
@@ -169,11 +166,50 @@ impl CPU {
             0x28 => { // PLP
                 self.status = (self.pull() & 0b1110_1111) | 0b0010_0000; // Keep bit 5 set, ignore bit 4
             }
+            0xE8 => self.inx(),
+            0xC8 => self.iny(),
+            0xCA => self.dex(),
+            0x88 => self.dey(),
+            0xE6 => self.inc(&AddressingMode::ZeroPage),
+            0xF6 => self.inc(&AddressingMode::ZeroPageX),
+            0xEE => self.inc(&AddressingMode::Absolute),
+            0xFE => self.inc(&AddressingMode::AbsoluteX),
+            0xC6 => self.dec(&AddressingMode::ZeroPage),
+            0xD6 => self.dec(&AddressingMode::ZeroPageX),
+            0xCE => self.dec(&AddressingMode::Absolute),
+            0xDE => self.dec(&AddressingMode::AbsoluteX),
+            0xE9 => self.sbc(&AddressingMode::Immediate),
+            0xE5 => self.sbc(&AddressingMode::ZeroPage),
+            0xF5 => self.sbc(&AddressingMode::ZeroPageX),
+            0xED => self.sbc(&AddressingMode::Absolute),
+            0xFD => self.sbc(&AddressingMode::AbsoluteX),
+            0xF9 => self.sbc(&AddressingMode::AbsoluteY),
+            0xE1 => self.sbc(&AddressingMode::IndirectX),
+            0xF1 => self.sbc(&AddressingMode::IndirectY),
+            0x80 => { // BRA (Branch Always)
+                let offset = self.memory.read(self.pc) as i8; // Read signed offset
+                self.pc += 1; // Increment program counter
+                let jump_addr = ((self.pc as i32) + (offset as i32)) as u16; // Calculate new address
+                self.pc = jump_addr; // Update program counter
+            }
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
             }
         }
+    }
+
+    fn adc(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
+        let carry = self.get_carry_flag() as u16;
+        let sum = self.a as u16 + value as u16 + carry;
+        
+        self.set_carry_flag(sum > 0xFF);
+        let result = sum as u8;
+        self.set_overflow_flag(((self.a ^ result) & (value ^ result) & 0x80) != 0);
+        
+        self.a = result;
+        self.update_zero_and_negative_flags(self.a);
     }
 }
 
@@ -207,14 +243,6 @@ impl CPU {
 
     pub fn sty(&mut self, address: u16) {
         self.memory.write(address, self.y);
-    }
-
-    pub fn get_status(&self) -> u8 {
-        self.status
-    }
-
-    pub fn set_status(&mut self, value: u8) {
-        self.status = value;
     }
 
     fn set_flag(&mut self, mask: u8) {
@@ -318,5 +346,122 @@ impl CPU {
     fn pull(&mut self) -> u8 {
         self.sp = self.sp.wrapping_add(1);
         self.memory.read(0x0100 + self.sp as u16)
+    }
+
+    fn sbc(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
+        let carry = self.get_carry_flag() as u8;
+        let result = self.a.wrapping_sub(value).wrapping_sub(carry);
+        
+        self.set_carry_flag(self.a >= value);
+        self.set_overflow_flag((self.a ^ value) & (self.a ^ result) & 0x80 != 0);
+        
+        self.a = result;
+        self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn inc(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        let result = value.wrapping_add(1);
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn inx(&mut self) {
+        self.x = self.x.wrapping_add(1);
+        self.update_zero_and_negative_flags(self.x);
+    }
+
+    fn iny(&mut self) {
+        self.y = self.y.wrapping_add(1);
+        self.update_zero_and_negative_flags(self.y);
+    }
+
+    fn dec(&mut self, mode: &AddressingMode) {
+        let addr = self.get_operand_address(mode);
+        let value = self.mem_read(addr);
+        let result = value.wrapping_sub(1);
+        self.mem_write(addr, result);
+        self.update_zero_and_negative_flags(result);
+    }
+
+    fn dex(&mut self) {
+        self.x = self.x.wrapping_sub(1);
+        self.update_zero_and_negative_flags(self.x);
+    }
+
+    fn dey(&mut self) {
+        self.y = self.y.wrapping_sub(1);
+        self.update_zero_and_negative_flags(self.y);
+    }
+
+    fn get_operand(&mut self, mode: &AddressingMode) -> u8 {
+        match mode {
+            AddressingMode::Immediate => {
+                let val = self.memory.read(self.pc);
+                self.pc += 1;
+                val
+            }
+            _ => {
+                let addr = self.get_operand_address(mode);
+                self.memory.read(addr)
+            }
+        }
+    }
+
+    fn get_operand_address(&self, mode: &AddressingMode) -> u16 {
+        match mode {
+            AddressingMode::ZeroPage => {
+                self.memory.read(self.pc) as u16
+            }
+            AddressingMode::ZeroPageX => {
+                let pos = self.memory.read(self.pc);
+                pos.wrapping_add(self.x) as u16
+            }
+            AddressingMode::ZeroPageY => {
+                let pos = self.memory.read(self.pc);
+                pos.wrapping_add(self.y) as u16
+            }
+            AddressingMode::Absolute => {
+                self.memory.read_u16(self.pc)
+            }
+            AddressingMode::AbsoluteX => {
+                let base = self.memory.read_u16(self.pc);
+                base.wrapping_add(self.x as u16)
+            }
+            AddressingMode::AbsoluteY => {
+                let base = self.memory.read_u16(self.pc);
+                base.wrapping_add(self.y as u16)
+            }
+            AddressingMode::IndirectX => {
+                let base = self.memory.read(self.pc);
+                let ptr = base.wrapping_add(self.x);
+                let lo = self.memory.read(ptr as u16);
+                let hi = self.memory.read(ptr.wrapping_add(1) as u16);
+                (hi as u16) << 8 | (lo as u16)
+            }
+            AddressingMode::IndirectY => {
+                let base = self.memory.read(self.pc);
+                let lo = self.memory.read(base as u16);
+                let hi = self.memory.read(base.wrapping_add(1) as u16);
+                let deref_base = (hi as u16) << 8 | (lo as u16);
+                deref_base.wrapping_add(self.y as u16)
+            }
+            _ => panic!("mode {:?} not supported", mode),
+        }
+    }
+
+    fn mem_read(&self, addr: u16) -> u8 {
+        self.memory.read(addr)
+    }
+
+    fn mem_write(&mut self, addr: u16, value: u8) {
+        self.memory.write(addr, value)
+    }
+
+    fn update_zero_and_negative_flags(&mut self, value: u8) {
+        self.set_zero_flag(value);
+        self.set_negative_flag(value);
     }
 }

@@ -57,6 +57,26 @@
 #### System
 - [x] BRK (Force Break)
 
+#### Arithmetic Operations
+- [x] SBC (Subtract with Carry)
+  - [x] Immediate mode
+  - [x] Zero Page mode
+  - [x] Other addressing modes
+- [x] INC (Increment Memory)
+  - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
+  - [x] Absolute,X
+- [x] INX (Increment X)
+- [x] INY (Increment Y)
+- [x] DEC (Decrement Memory)
+  - [x] Zero Page
+  - [x] Zero Page,X
+  - [x] Absolute
+  - [x] Absolute,X
+- [x] DEX (Decrement X)
+- [x] DEY (Decrement Y)
+
 ## Features To Be Implemented
 
 ### Addressing Modes
@@ -69,14 +89,6 @@
 - [ ] Relative addressing for all branch instructions
 
 ### Instructions
-#### Arithmetic Operations
-- [ ] SBC (Subtract with Carry)
-- [ ] INC (Increment Memory)
-- [ ] INX (Increment X)
-- [ ] INY (Increment Y)
-- [ ] DEC (Decrement Memory)
-- [ ] DEX (Decrement X)
-- [ ] DEY (Decrement Y)
 
 #### Logical Operations
 - [ ] AND (Logical AND)
