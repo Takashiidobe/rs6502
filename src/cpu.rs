@@ -282,6 +282,13 @@ impl CPU {
             0x76 => self.ror(&AddressingMode::ZeroPageX),
             0x6E => self.ror(&AddressingMode::Absolute),
             0x7E => self.ror(&AddressingMode::AbsoluteX),
+            // Branch Instructions
+            0xB0 => self.branch(self.get_carry_flag()), // BCS (Branch if Carry Set)
+            0x90 => self.branch(!self.get_carry_flag()), // BCC (Branch if Carry Clear)
+            0x30 => self.branch(self.get_negative_flag()), // BMI (Branch if Minus)
+            0x10 => self.branch(!self.get_negative_flag()), // BPL (Branch if Plus)
+            0x50 => self.branch(!self.get_overflow_flag()), // BVC (Branch if Overflow Clear)
+            0x70 => self.branch(self.get_overflow_flag()), // BVS (Branch if Overflow Set)
             _ => {
                 println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
                 self.halted = true;
@@ -382,6 +389,16 @@ impl CPU {
         self.set_carry_flag(self.a & 0x01 != 0);
         self.a = (self.a >> 1) | (carry << 7);
         self.update_zero_and_negative_flags(self.a);
+    }
+
+    fn branch(&mut self, condition: bool) {
+        if condition {
+            let offset = self.memory.read(self.pc) as i8; // Read signed offset
+            self.pc += 1; // Increment program counter
+            self.pc = ((self.pc as i32) + (offset as i32)) as u16; // Calculate new address
+        } else {
+            self.pc += 1; // Skip the offset byte
+        }
     }
 }
 

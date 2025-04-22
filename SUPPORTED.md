@@ -110,6 +110,14 @@
 - [x] ROL (Rotate Left)
 - [x] ROR (Rotate Right)
 
+#### Branch Instructions
+- [x] BCS (Branch if Carry Set)
+- [x] BCC (Branch if Carry Clear)
+- [x] BMI (Branch if Minus)
+- [x] BPL (Branch if Plus)
+- [x] BVC (Branch if Overflow Clear)
+- [x] BVS (Branch if Overflow Set)
+
 ## Features To Be Implemented
 
 ### Addressing Modes
@@ -132,13 +140,6 @@
 - [ ] SED (Set Decimal)
 - [ ] SEI (Set Interrupt)
 
-#### Branch Instructions
-- [ ] BCS (Branch if Carry Set)
-- [ ] BCC (Branch if Carry Clear)
-- [ ] BMI (Branch if Minus)
-- [ ] BPL (Branch if Plus)
-- [ ] BVC (Branch if Overflow Clear)
-- [ ] BVS (Branch if Overflow Set)
 
 #### Jump & Call Operations
 - [ ] JMP (Jump)

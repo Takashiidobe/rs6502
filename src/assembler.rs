@@ -113,6 +113,13 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         Instruction { opcode: 0xD0, mode: AddressingMode::Immediate, bytes: 2 }, // Relative addressing
     ]);
 
+    map.insert("BCS", vec![Instruction { opcode: 0xB0, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+    map.insert("BCC", vec![Instruction { opcode: 0x90, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+    map.insert("BMI", vec![Instruction { opcode: 0x30, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+    map.insert("BPL", vec![Instruction { opcode: 0x10, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+    map.insert("BVC", vec![Instruction { opcode: 0x50, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+    map.insert("BVS", vec![Instruction { opcode: 0x70, mode: AddressingMode::Immediate, bytes: 2 }]); // Relative addressing
+
     // Return Instructions
     map.insert("RTS", vec![
         Instruction { opcode: 0x60, mode: AddressingMode::Implied, bytes: 1 },
