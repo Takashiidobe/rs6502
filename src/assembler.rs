@@ -184,868 +184,912 @@ static INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
             opname: OpCode::LDX,
             cycles: 4,
         },
-};
-
-pub fn create_opcode_map() -> HashMap<OpCode, Vec<Instruction>> {
-    let mut map = HashMap::new();
-
-    // LDY (Load Y Register)
-    map.insert(
-        OpCode::LDY,
-        vec![
+        0xA0u8 =>
             Instruction {
                 opcode: 0xA0,
                 mode: AddressingMode::Immediate,
                 bytes: 2,
+                opname: OpCode::LDY,
+                cycles: 2,
             },
+            0xA4u8 =>
             Instruction {
                 opcode: 0xA4,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
+                opname: OpCode::LDY,
+                cycles: 3,
             },
+            0xB4u8 =>
             Instruction {
                 opcode: 0xB4,
                 mode: AddressingMode::ZeroPageX,
                 bytes: 2,
+                opname: OpCode::LDY,
+                cycles: 4,
             },
+0xACu8=>
             Instruction {
                 opcode: 0xAC,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
+                opname: OpCode::LDY,
+                cycles: 4,
             },
-            Instruction {
-                opcode: 0xBC,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
+    0xBCu8=>
+        Instruction {
+            opcode: 0xBC,
+            mode: AddressingMode::AbsoluteX,
+            bytes: 3,
+            opname: OpCode::LDY,
+            cycles: 4,
+        },
 
-    // STX (Store X Register)
-    map.insert(
-        OpCode::STX,
-        vec![
-            Instruction {
+       0x86u8 =>     Instruction {
                 opcode: 0x86,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
+                opname: OpCode::STX,
+                cycles: 3,
             },
-            Instruction {
+          0x96u8=>  Instruction {
                 opcode: 0x96,
                 mode: AddressingMode::ZeroPageY,
                 bytes: 2,
-            },
+
+                opname: OpCode::STX,
+                cycles: 4,
+},
+          0x8eu8 =>
             Instruction {
                 opcode: 0x8E,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
+                opname: OpCode::STX,
+                cycles: 4,
             },
-        ],
-    );
-
-    // STY (Store Y Register)
-    map.insert(
-        OpCode::STY,
-        vec![
+        0x84u8 =>
             Instruction {
                 opcode: 0x84,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
+                opname: OpCode::STY,
+                cycles: 3,
             },
-            Instruction {
+
+        0x94u8 =>    Instruction {
                 opcode: 0x94,
                 mode: AddressingMode::ZeroPageX,
                 bytes: 2,
+                opname: OpCode::STY,
+                cycles: 4,
             },
-            Instruction {
+         0x8Cu8 =>   Instruction {
                 opcode: 0x8C,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
+                opname: OpCode::STY,
+                cycles: 4,
             },
-        ],
-    );
-
-    // STA (Store Accumulator)
-    map.insert(
-        OpCode::STA,
-        vec![
-            Instruction {
+         0x85u8=>   Instruction {
                 opcode: 0x85,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
+                opname: OpCode::STA,
+                cycles: 3,
             },
-            Instruction {
+         0x95u8 =>   Instruction {
                 opcode: 0x95,
                 mode: AddressingMode::ZeroPageX,
                 bytes: 2,
+                opname: OpCode::STA,
+                cycles: 4,
             },
-            Instruction {
+          0x8Du8 =>  Instruction {
                 opcode: 0x8D,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
+                opname: OpCode::STA,
+                cycles: 4,
             },
-            Instruction {
+         0x9Du8 =>   Instruction {
                 opcode: 0x9D,
                 mode: AddressingMode::AbsoluteX,
                 bytes: 3,
+                opname: OpCode::STA,
+                cycles: 5,
             },
-            Instruction {
+          0x99u8 =>  Instruction {
                 opcode: 0x99,
                 mode: AddressingMode::AbsoluteY,
                 bytes: 3,
+                opname: OpCode::STA,
+                cycles: 5,
             },
-            Instruction {
+          0x81u8 =>  Instruction {
                 opcode: 0x81,
                 mode: AddressingMode::IndirectX,
                 bytes: 2,
+                opname: OpCode::STA,
+                cycles: 6,
             },
-            Instruction {
+          0x91u8 =>  Instruction {
                 opcode: 0x91,
                 mode: AddressingMode::IndirectY,
                 bytes: 2,
+                opname: OpCode::STA,
+                cycles: 6,
             },
-        ],
-    );
-
-    // ADC (Add with Carry)
-    map.insert(
-        OpCode::ADC,
-        vec![
-            Instruction {
-                opname: OpCode::ADC,
-                opcode: 0x69,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-                cycles: 2,
-            },
-            Instruction {
-                opcode: 0x65,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x75,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x6D,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x7D,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x79,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x61,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x71,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
-    // CMP (Compare Accumulator)
-    map.insert(
-        OpCode::CMP,
-        vec![
-            Instruction {
-                opcode: 0xC9,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xC5,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xD5,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xCD,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xDD,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xD9,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xC1,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xD1,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
+            // ADC Instructions
+    0x69u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x69,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0x65u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x65,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0x75u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x75,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0x6Du8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x6D,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0x7Du8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x7D,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x79u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x79,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x61u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x61,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x71u8 => Instruction {
+        opname: OpCode::ADC,
+        opcode: 0x71,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
+    // CMP Instructions
+    0xC9u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xC9,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0xC5u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xC5,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0xD5u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xD5,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0xCDu8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xCD,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0xDDu8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xDD,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0xD9u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xD9,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0xC1u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xC1,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0xD1u8 => Instruction {
+        opname: OpCode::CMP,
+        opcode: 0xD1,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
     // Branch Instructions
-    map.insert(
-        OpCode::BEQ,
-        vec![
-            Instruction {
-                opcode: 0xF0,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            }, // Relative addressing
-        ],
-    );
-
-    map.insert(
-        OpCode::BNE,
-        vec![
-            Instruction {
-                opcode: 0xD0,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            }, // Relative addressing
-        ],
-    );
-
-    map.insert(
-        OpCode::BCS,
-        vec![Instruction {
-            opcode: 0xB0,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-    map.insert(
-        OpCode::BCC,
-        vec![Instruction {
-            opcode: 0x90,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-    map.insert(
-        OpCode::BMI,
-        vec![Instruction {
-            opcode: 0x30,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-    map.insert(
-        OpCode::BPL,
-        vec![Instruction {
-            opcode: 0x10,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-    map.insert(
-        OpCode::BVC,
-        vec![Instruction {
-            opcode: 0x50,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-    map.insert(
-        OpCode::BVS,
-        vec![Instruction {
-            opcode: 0x70,
-            mode: AddressingMode::Immediate,
-            bytes: 2,
-        }],
-    ); // Relative addressing
-
-    // Return Instructions
-    map.insert(
-        OpCode::RTS,
-        vec![Instruction {
-            opcode: 0x60,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::BRK,
-        vec![Instruction {
-            opcode: 0x00,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
+    0xF0u8 => Instruction {
+        opname: OpCode::BEQ,
+        opcode: 0xF0,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative, but Immediate is used here
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0xD0u8 => Instruction {
+        opname: OpCode::BNE,
+        opcode: 0xD0,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0xB0u8 => Instruction {
+        opname: OpCode::BCS,
+        opcode: 0xB0,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0x90u8 => Instruction {
+        opname: OpCode::BCC,
+        opcode: 0x90,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0x30u8 => Instruction {
+        opname: OpCode::BMI,
+        opcode: 0x30,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0x10u8 => Instruction {
+        opname: OpCode::BPL,
+        opcode: 0x10,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0x50u8 => Instruction {
+        opname: OpCode::BVC,
+        opcode: 0x50,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+    0x70u8 => Instruction {
+        opname: OpCode::BVS,
+        opcode: 0x70,
+        mode: AddressingMode::Immediate, // Note: 6502 uses Relative
+        bytes: 2,
+        cycles: 2, // +1 if branch succeeds, +2 if page crossed
+    },
+        0x60u8 => Instruction {
+        opname: OpCode::RTS,
+        opcode: 0x60,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 6,
+    },
+    0x00u8 => Instruction {
+        opname: OpCode::BRK,
+        opcode: 0x00,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 7,
+    },
     // Register Transfers
-    map.insert(
-        OpCode::TAX,
-        vec![Instruction {
-            opcode: 0xAA,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
+        0xAAu8 => Instruction {
+        opname: OpCode::TAX,
+        opcode: 0xAA,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xA8u8 => Instruction {
+        opname: OpCode::TAY,
+        opcode: 0xA8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x8Au8 => Instruction {
+        opname: OpCode::TXA,
+        opcode: 0x8A,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x98u8 => Instruction {
+        opname: OpCode::TYA,
+        opcode: 0x98,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+        // Stack Operations
+    0xBAu8 => Instruction {
+        opname: OpCode::TSX,
+        opcode: 0xBA,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x9Au8 => Instruction {
+        opname: OpCode::TXS,
+        opcode: 0x9A,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x48u8 => Instruction {
+        opname: OpCode::PHA,
+        opcode: 0x48,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 3,
+    },
+    0x08u8 => Instruction {
+        opname: OpCode::PHP,
+        opcode: 0x08,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 3,
+    },
+    0x68u8 => Instruction {
+        opname: OpCode::PLA,
+        opcode: 0x68,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 4,
+    },
+    0x28u8 => Instruction {
+        opname: OpCode::PLP,
+        opcode: 0x28,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 4,
+    },
+        // SBC Instructions
+    0xE9u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xE9,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0xE5u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xE5,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0xF5u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xF5,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0xEDu8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xED,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0xFDu8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xFD,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0xF9u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xF9,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0xE1u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xE1,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0xF1u8 => Instruction {
+        opname: OpCode::SBC,
+        opcode: 0xF1,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
+    // INC Instructions
+    0xE6u8 => Instruction {
+        opname: OpCode::INC,
+        opcode: 0xE6,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0xF6u8 => Instruction {
+        opname: OpCode::INC,
+        opcode: 0xF6,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0xEEu8 => Instruction {
+        opname: OpCode::INC,
+        opcode: 0xEE,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0xFEu8 => Instruction {
+        opname: OpCode::INC,
+        opcode: 0xFE,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+    // DEC Instructions
+    0xC6u8 => Instruction {
+        opname: OpCode::DEC,
+        opcode: 0xC6,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0xD6u8 => Instruction {
+        opname: OpCode::DEC,
+        opcode: 0xD6,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0xCEu8 => Instruction {
+        opname: OpCode::DEC,
+        opcode: 0xCE,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0xDEu8 => Instruction {
+        opname: OpCode::DEC,
+        opcode: 0xDE,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+    // Single byte instructions (Implied Addressing)
+    0xE8u8 => Instruction {
+        opname: OpCode::INX,
+        opcode: 0xE8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xC8u8 => Instruction {
+        opname: OpCode::INY,
+        opcode: 0xC8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xCAu8 => Instruction {
+        opname: OpCode::DEX,
+        opcode: 0xCA,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x88u8 => Instruction {
+        opname: OpCode::DEY,
+        opcode: 0x88,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    // AND Instructions
+    0x29u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x29,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0x25u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x25,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0x35u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x35,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0x2Du8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x2D,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0x3Du8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x3D,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x39u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x39,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x21u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x21,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x31u8 => Instruction {
+        opname: OpCode::AND,
+        opcode: 0x31,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
+    // ORA Instructions
+    0x09u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x09,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0x05u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x05,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0x15u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x15,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0x0Du8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x0D,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0x1Du8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x1D,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x19u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x19,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x01u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x01,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x11u8 => Instruction {
+        opname: OpCode::ORA,
+        opcode: 0x11,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
+        // EOR Instructions
+    0x49u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x49,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+    0x45u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x45,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3, // Corrected cycle count
+    },
+    0x55u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x55,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 4,
+    },
+    0x4Du8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x4D,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 4,
+    },
+    0x5Du8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x5D,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x59u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x59,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4, // +1 if page crossed
+    },
+    0x41u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x41,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x51u8 => Instruction {
+        opname: OpCode::EOR,
+        opcode: 0x51,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        cycles: 5, // +1 if page crossed
+    },
+    // ASL Instructions
+    0x0Au8 => Instruction {
+        opname: OpCode::ASL,
+        opcode: 0x0A,
+        mode: AddressingMode::Implied, // Accumulator
+        bytes: 1,
+        cycles: 2,
+    },
+    0x06u8 => Instruction {
+        opname: OpCode::ASL,
+        opcode: 0x06,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0x16u8 => Instruction {
+        opname: OpCode::ASL,
+        opcode: 0x16,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x0Eu8 => Instruction {
+        opname: OpCode::ASL,
+        opcode: 0x0E,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0x1Eu8 => Instruction {
+        opname: OpCode::ASL,
+        opcode: 0x1E,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+    // LSR Instructions
+    0x4Au8 => Instruction {
+        opname: OpCode::LSR,
+        opcode: 0x4A,
+        mode: AddressingMode::Implied, // Accumulator
+        bytes: 1,
+        cycles: 2,
+    },
+    0x46u8 => Instruction {
+        opname: OpCode::LSR,
+        opcode: 0x46,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0x56u8 => Instruction {
+        opname: OpCode::LSR,
+        opcode: 0x56,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x4Eu8 => Instruction {
+        opname: OpCode::LSR,
+        opcode: 0x4E,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0x5Eu8 => Instruction {
+        opname: OpCode::LSR,
+        opcode: 0x5E,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+    // ROL Instructions
+    0x2Au8 => Instruction {
+        opname: OpCode::ROL,
+        opcode: 0x2A,
+        mode: AddressingMode::Implied, // Accumulator
+        bytes: 1,
+        cycles: 2,
+    },
+    0x26u8 => Instruction {
+        opname: OpCode::ROL,
+        opcode: 0x26,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0x36u8 => Instruction {
+        opname: OpCode::ROL,
+        opcode: 0x36,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x2Eu8 => Instruction {
+        opname: OpCode::ROL,
+        opcode: 0x2E,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0x3Eu8 => Instruction {
+        opname: OpCode::ROL,
+        opcode: 0x3E,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+    // ROR Instructions
+    0x6Au8 => Instruction {
+        opname: OpCode::ROR,
+        opcode: 0x6A,
+        mode: AddressingMode::Implied, // Accumulator
+        bytes: 1,
+        cycles: 2,
+    },
+    0x66u8 => Instruction {
+        opname: OpCode::ROR,
+        opcode: 0x66,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 5,
+    },
+    0x76u8 => Instruction {
+        opname: OpCode::ROR,
+        opcode: 0x76,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        cycles: 6,
+    },
+    0x6Eu8 => Instruction {
+        opname: OpCode::ROR,
+        opcode: 0x6E,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        cycles: 6,
+    },
+    0x7Eu8 => Instruction {
+        opname: OpCode::ROR,
+        opcode: 0x7E,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        cycles: 7,
+    },
+        // Status Flag Changes
+    0x18u8 => Instruction {
+        opname: OpCode::CLC,
+        opcode: 0x18,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xD8u8 => Instruction {
+        opname: OpCode::CLD,
+        opcode: 0xD8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x58u8 => Instruction {
+        opname: OpCode::CLI,
+        opcode: 0x58,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xB8u8 => Instruction {
+        opname: OpCode::CLV,
+        opcode: 0xB8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x38u8 => Instruction {
+        opname: OpCode::SEC,
+        opcode: 0x38,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0xF8u8 => Instruction {
+        opname: OpCode::SED,
+        opcode: 0xF8,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+    0x78u8 => Instruction {
+        opname: OpCode::SEI,
+        opcode: 0x78,
+        mode: AddressingMode::Implied,
+        bytes: 1,
+        cycles: 2,
+    },
+};
 
-    map.insert(
-        OpCode::TAY,
-        vec![Instruction {
-            opcode: 0xA8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::TXA,
-        vec![Instruction {
-            opcode: 0x8A,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::TYA,
-        vec![Instruction {
-            opcode: 0x98,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    // Stack Operations
-    map.insert(
-        OpCode::TSX,
-        vec![Instruction {
-            opcode: 0xBA,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::TXS,
-        vec![Instruction {
-            opcode: 0x9A,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::PHA,
-        vec![Instruction {
-            opcode: 0x48,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::PHP,
-        vec![Instruction {
-            opcode: 0x08,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::PLA,
-        vec![Instruction {
-            opcode: 0x68,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    map.insert(
-        OpCode::PLP,
-        vec![Instruction {
-            opcode: 0x28,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    // SBC
-    map.insert(
-        OpCode::SBC,
-        vec![
-            Instruction {
-                opcode: 0xE9,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xE5,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xF5,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xED,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xFD,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xF9,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xE1,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xF1,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
-    // INC/DEC
-    map.insert(
-        OpCode::INC,
-        vec![
-            Instruction {
-                opcode: 0xE6,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xF6,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xEE,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xFE,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    map.insert(
-        OpCode::DEC,
-        vec![
-            Instruction {
-                opcode: 0xC6,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xD6,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xCE,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xDE,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    // Single byte instructions
-    map.insert(
-        OpCode::INX,
-        vec![Instruction {
-            opcode: 0xE8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::INY,
-        vec![Instruction {
-            opcode: 0xC8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::DEX,
-        vec![Instruction {
-            opcode: 0xCA,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::DEY,
-        vec![Instruction {
-            opcode: 0x88,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-
-    // AND (Logical AND)
-    map.insert(
-        OpCode::AND,
-        vec![
-            Instruction {
-                opcode: 0x29,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x25,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x35,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x2D,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x3D,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x39,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x21,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x31,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
-    // ORA (Logical OR)
-    map.insert(
-        OpCode::ORA,
-        vec![
-            Instruction {
-                opcode: 0x09,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x05,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x15,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x0D,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x1D,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x19,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x01,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x11,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
-    // EOR (Exclusive OR)
-    map.insert(
-        OpCode::EOR,
-        vec![
-            Instruction {
-                opcode: 0x49,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x45,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x55,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x4D,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x5D,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x59,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x41,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x51,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
-
-    // ASL (Arithmetic Shift Left)
-    map.insert(
-        OpCode::ASL,
-        vec![
-            Instruction {
-                opcode: 0x0A,
-                mode: AddressingMode::Implied,
-                bytes: 1,
-            },
-            Instruction {
-                opcode: 0x06,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x16,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x0E,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x1E,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    // LSR (Logical Shift Right)
-    map.insert(
-        OpCode::LSR,
-        vec![
-            Instruction {
-                opcode: 0x4A,
-                mode: AddressingMode::Implied,
-                bytes: 1,
-            },
-            Instruction {
-                opcode: 0x46,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x56,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x4E,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x5E,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    // ROL (Rotate Left)
-    map.insert(
-        OpCode::ROL,
-        vec![
-            Instruction {
-                opcode: 0x2A,
-                mode: AddressingMode::Implied,
-                bytes: 1,
-            },
-            Instruction {
-                opcode: 0x26,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x36,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x2E,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x3E,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    // ROR (Rotate Right)
-    map.insert(
-        OpCode::ROR,
-        vec![
-            Instruction {
-                opcode: 0x6A,
-                mode: AddressingMode::Implied,
-                bytes: 1,
-            },
-            Instruction {
-                opcode: 0x66,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x76,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0x6E,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0x7E,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-            },
-        ],
-    );
-
-    // Status Flag Changes
-    map.insert(
-        OpCode::CLC,
-        vec![Instruction {
-            opcode: 0x18,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::CLD,
-        vec![Instruction {
-            opcode: 0xD8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::CLI,
-        vec![Instruction {
-            opcode: 0x58,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::CLV,
-        vec![Instruction {
-            opcode: 0xB8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::SEC,
-        vec![Instruction {
-            opcode: 0x38,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::SED,
-        vec![Instruction {
-            opcode: 0xF8,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
-    map.insert(
-        OpCode::SEI,
-        vec![Instruction {
-            opcode: 0x78,
-            mode: AddressingMode::Implied,
-            bytes: 1,
-        }],
-    );
+pub fn create_opcode_map() -> HashMap<OpCode, Vec<Instruction>> {
+    let mut map = HashMap::new();
 
     map
 }
