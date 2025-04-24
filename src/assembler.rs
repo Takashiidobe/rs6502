@@ -92,76 +92,76 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 2,
         cycles: 2,
     },
-0xA5u8 => Instruction {
-    opname: OpCode::LDA,
-                opcode: 0xA5,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-                cycles: 3,
-            },
-            0xB5u8 =>
-            Instruction {
-                opname: OpCode::LDA,
-                opcode: 0xB5,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-                cycles: 4,
-            },
-            0xADu8 =>
-            Instruction {
-                opname: OpCode::LDA,
-                opcode: 0xAD,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-                cycles: 4
-            },
-            0xBDu8 =>
-            Instruction {
-                opname: OpCode::LDA,
-                opcode: 0xBD,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-                cycles: 4
-            },
-            0xB9u8 =>  Instruction {
-                opname: OpCode::LDA,
-                opcode: 0xB9,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-                cycles: 4
-            },
-
-            0xA1u8 => Instruction {
-                opname: OpCode::LDA,
-                opcode: 0xA1,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-                cycles: 6
-            },
-
-            0xB1u8 =>
+    0xA5u8 => Instruction {
+        opname: OpCode::LDA,
+        opcode: 0xA5,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        cycles: 3,
+    },
+    0xB5u8 =>
         Instruction {
-                opname: OpCode::LDA,
+            opname: OpCode::LDA,
+            opcode: 0xB5,
+            mode: AddressingMode::ZeroPageX,
+            bytes: 2,
+            cycles: 4,
+        },
+    0xADu8 =>
+        Instruction {
+            opname: OpCode::LDA,
+            opcode: 0xAD,
+            mode: AddressingMode::Absolute,
+            bytes: 3,
+            cycles: 4
+        },
+    0xBDu8 =>
+        Instruction {
+            opname: OpCode::LDA,
+            opcode: 0xBD,
+            mode: AddressingMode::AbsoluteX,
+            bytes: 3,
+            cycles: 4
+        },
+    0xB9u8 =>  Instruction {
+        opname: OpCode::LDA,
+        opcode: 0xB9,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        cycles: 4
+    },
+
+    0xA1u8 => Instruction {
+        opname: OpCode::LDA,
+        opcode: 0xA1,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        cycles: 6
+    },
+
+    0xB1u8 =>
+        Instruction {
+            opname: OpCode::LDA,
             opcode: 0xB1,
             mode: AddressingMode::IndirectY,
             bytes: 2,
-                cycles: 5
+            cycles: 5
         },
-        0xA2u8 =>  Instruction {
-                opcode: 0xA2,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-                opname: OpCode::LDX,
-                cycles: 2,
-            },
+    0xA2u8 =>  Instruction {
+        opcode: 0xA2,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        opname: OpCode::LDX,
+        cycles: 2,
+    },
     0xA6u8 => Instruction {
-            opcode: 0xA6,
-            mode: AddressingMode::ZeroPage,
-            bytes: 2,
-            opname: OpCode::LDX,
-            cycles: 3,
-        },
-        0xB6u8 =>
+        opcode: 0xA6,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        opname: OpCode::LDX,
+        cycles: 3,
+    },
+    0xB6u8 =>
         Instruction {
             opcode: 0xB6,
             mode: AddressingMode::ZeroPageY,
@@ -169,7 +169,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
             opname: OpCode::LDX,
             cycles: 4,
         },
-        0xAEu8 =>
+    0xAEu8 =>
         Instruction {
             opcode: 0xAE,
             mode: AddressingMode::Absolute,
@@ -177,7 +177,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
             opname: OpCode::LDX,
             cycles: 4,
         },
-        0xBEu8 =>
+    0xBEu8 =>
         Instruction {
             opcode: 0xBE,
             mode: AddressingMode::AbsoluteY,
@@ -185,38 +185,38 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
             opname: OpCode::LDX,
             cycles: 4,
         },
-        0xA0u8 =>
-            Instruction {
-                opcode: 0xA0,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-                opname: OpCode::LDY,
-                cycles: 2,
-            },
-            0xA4u8 =>
-            Instruction {
-                opcode: 0xA4,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-                opname: OpCode::LDY,
-                cycles: 3,
-            },
-            0xB4u8 =>
-            Instruction {
-                opcode: 0xB4,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-                opname: OpCode::LDY,
-                cycles: 4,
-            },
-0xACu8=>
-            Instruction {
-                opcode: 0xAC,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-                opname: OpCode::LDY,
-                cycles: 4,
-            },
+    0xA0u8 =>
+        Instruction {
+            opcode: 0xA0,
+            mode: AddressingMode::Immediate,
+            bytes: 2,
+            opname: OpCode::LDY,
+            cycles: 2,
+        },
+    0xA4u8 =>
+        Instruction {
+            opcode: 0xA4,
+            mode: AddressingMode::ZeroPage,
+            bytes: 2,
+            opname: OpCode::LDY,
+            cycles: 3,
+        },
+    0xB4u8 =>
+        Instruction {
+            opcode: 0xB4,
+            mode: AddressingMode::ZeroPageX,
+            bytes: 2,
+            opname: OpCode::LDY,
+            cycles: 4,
+        },
+    0xACu8=>
+        Instruction {
+            opcode: 0xAC,
+            mode: AddressingMode::Absolute,
+            bytes: 3,
+            opname: OpCode::LDY,
+            cycles: 4,
+        },
     0xBCu8=>
         Instruction {
             opcode: 0xBC,
@@ -226,108 +226,108 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
             cycles: 4,
         },
 
-       0x86u8 =>     Instruction {
-                opcode: 0x86,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-                opname: OpCode::STX,
-                cycles: 3,
-            },
-          0x96u8=>  Instruction {
-                opcode: 0x96,
-                mode: AddressingMode::ZeroPageY,
-                bytes: 2,
-
-                opname: OpCode::STX,
-                cycles: 4,
-},
-          0x8eu8 =>
-            Instruction {
-                opcode: 0x8E,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-                opname: OpCode::STX,
-                cycles: 4,
-            },
-        0x84u8 =>
-            Instruction {
-                opcode: 0x84,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-                opname: OpCode::STY,
-                cycles: 3,
-            },
-
-        0x94u8 =>    Instruction {
-                opcode: 0x94,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-                opname: OpCode::STY,
-                cycles: 4,
-            },
-         0x8Cu8 =>   Instruction {
-                opcode: 0x8C,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-                opname: OpCode::STY,
-                cycles: 4,
-            },
-         0x85u8=>   Instruction {
-                opcode: 0x85,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-                opname: OpCode::STA,
-                cycles: 3,
-            },
-         0x95u8 =>   Instruction {
-                opcode: 0x95,
-                mode: AddressingMode::ZeroPageX,
-                bytes: 2,
-                opname: OpCode::STA,
-                cycles: 4,
-            },
-          0x8Du8 =>  Instruction {
-                opcode: 0x8D,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-                opname: OpCode::STA,
-                cycles: 4,
-            },
-         0x9Du8 =>   Instruction {
-                opcode: 0x9D,
-                mode: AddressingMode::AbsoluteX,
-                bytes: 3,
-                opname: OpCode::STA,
-                cycles: 5,
-            },
-          0x99u8 =>  Instruction {
-                opcode: 0x99,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-                opname: OpCode::STA,
-                cycles: 5,
-            },
-          0x81u8 =>  Instruction {
-                opcode: 0x81,
-                mode: AddressingMode::IndirectX,
-                bytes: 2,
-                opname: OpCode::STA,
-                cycles: 6,
-            },
-          0x91u8 =>  Instruction {
-                opcode: 0x91,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-                opname: OpCode::STA,
-                cycles: 6,
-            },
-            // ADC Instructions
-    0x69u8 => Instruction {
-        opname: OpCode::ADC,
-        opcode: 0x69,
-        mode: AddressingMode::Immediate,
+    0x86u8 =>     Instruction {
+        opcode: 0x86,
+        mode: AddressingMode::ZeroPage,
         bytes: 2,
-        cycles: 2,
+        opname: OpCode::STX,
+        cycles: 3,
+    },
+    0x96u8=>  Instruction {
+        opcode: 0x96,
+        mode: AddressingMode::ZeroPageY,
+        bytes: 2,
+
+        opname: OpCode::STX,
+        cycles: 4,
+    },
+    0x8eu8 =>
+        Instruction {
+            opcode: 0x8E,
+            mode: AddressingMode::Absolute,
+            bytes: 3,
+            opname: OpCode::STX,
+            cycles: 4,
+        },
+    0x84u8 =>
+        Instruction {
+            opcode: 0x84,
+            mode: AddressingMode::ZeroPage,
+            bytes: 2,
+            opname: OpCode::STY,
+            cycles: 3,
+        },
+
+    0x94u8 =>    Instruction {
+        opcode: 0x94,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        opname: OpCode::STY,
+        cycles: 4,
+    },
+    0x8Cu8 =>   Instruction {
+        opcode: 0x8C,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        opname: OpCode::STY,
+        cycles: 4,
+    },
+    0x85u8=>   Instruction {
+        opcode: 0x85,
+        mode: AddressingMode::ZeroPage,
+        bytes: 2,
+        opname: OpCode::STA,
+        cycles: 3,
+    },
+    0x95u8 =>   Instruction {
+        opcode: 0x95,
+        mode: AddressingMode::ZeroPageX,
+        bytes: 2,
+        opname: OpCode::STA,
+        cycles: 4,
+    },
+    0x8Du8 =>  Instruction {
+        opcode: 0x8D,
+        mode: AddressingMode::Absolute,
+        bytes: 3,
+        opname: OpCode::STA,
+        cycles: 4,
+    },
+    0x9Du8 =>   Instruction {
+        opcode: 0x9D,
+        mode: AddressingMode::AbsoluteX,
+        bytes: 3,
+        opname: OpCode::STA,
+        cycles: 5,
+    },
+    0x99u8 =>  Instruction {
+        opcode: 0x99,
+        mode: AddressingMode::AbsoluteY,
+        bytes: 3,
+        opname: OpCode::STA,
+        cycles: 5,
+    },
+    0x81u8 =>  Instruction {
+        opcode: 0x81,
+        mode: AddressingMode::IndirectX,
+        bytes: 2,
+        opname: OpCode::STA,
+        cycles: 6,
+    },
+    0x91u8 =>  Instruction {
+        opcode: 0x91,
+        mode: AddressingMode::IndirectY,
+        bytes: 2,
+        opname: OpCode::STA,
+        cycles: 6,
+    },
+    // ADC Instructions
+    0x69u8 => Instruction {
+    opname: OpCode::ADC,
+    opcode: 0x69,
+    mode: AddressingMode::Immediate,
+    bytes: 2,
+    cycles: 2,
     },
     0x65u8 => Instruction {
         opname: OpCode::ADC,
@@ -492,7 +492,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 2,
         cycles: 2, // +1 if branch succeeds, +2 if page crossed
     },
-        0x60u8 => Instruction {
+    0x60u8 => Instruction {
         opname: OpCode::RTS,
         opcode: 0x60,
         mode: AddressingMode::Implied,
@@ -507,7 +507,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         cycles: 7,
     },
     // Register Transfers
-        0xAAu8 => Instruction {
+    0xAAu8 => Instruction {
         opname: OpCode::TAX,
         opcode: 0xAA,
         mode: AddressingMode::Implied,
@@ -535,7 +535,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 1,
         cycles: 2,
     },
-        // Stack Operations
+    // Stack Operations
     0xBAu8 => Instruction {
         opname: OpCode::TSX,
         opcode: 0xBA,
@@ -578,7 +578,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 1,
         cycles: 4,
     },
-        // SBC Instructions
+    // SBC Instructions
     0xE9u8 => Instruction {
         opname: OpCode::SBC,
         opcode: 0xE9,
@@ -836,7 +836,7 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 2,
         cycles: 5, // +1 if page crossed
     },
-        // EOR Instructions
+    // EOR Instructions
     0x49u8 => Instruction {
         opname: OpCode::EOR,
         opcode: 0x49,
@@ -1037,13 +1037,13 @@ pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
         bytes: 3,
         cycles: 7,
     },
-        // Status Flag Changes
+    // Status Flag Changes
     0x18u8 => Instruction {
-        opname: OpCode::CLC,
-        opcode: 0x18,
-        mode: AddressingMode::Implied,
-        bytes: 1,
-        cycles: 2,
+    opname: OpCode::CLC,
+    opcode: 0x18,
+    mode: AddressingMode::Implied,
+    bytes: 1,
+    cycles: 2,
     },
     0xD8u8 => Instruction {
         opname: OpCode::CLD,
@@ -1095,7 +1095,7 @@ pub fn create_opcode_map() -> HashMap<OpCode, Vec<Instruction>> {
     for instruction in INSTRUCTION_LOOKUP.values() {
         map.entry(instruction.opname)
             .or_insert_with(Vec::new)
-            .push(instruction.clone());
+            .push(*instruction);
     }
 
     map
