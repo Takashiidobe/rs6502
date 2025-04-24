@@ -74,16 +74,16 @@ pub enum OpCode {
 
 #[derive(Debug, PartialEq, Clone, Copy, Hash, Eq, PartialOrd, Ord)]
 pub struct Instruction {
-    opname: OpCode,
-    opcode: u8,
-    mode: AddressingMode,
-    bytes: u8,
-    cycles: u8,
+    pub opname: OpCode,
+    pub opcode: u8,
+    pub mode: AddressingMode,
+    pub bytes: u8,
+    pub cycles: u8,
 }
 
 use phf_macros::phf_map;
 
-static INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
+pub const INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
     0xA9u8 => Instruction {
         opname: OpCode::LDA,
         opcode: 0xA9,
@@ -1090,6 +1090,12 @@ static INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
 
 pub fn create_opcode_map() -> HashMap<OpCode, Vec<Instruction>> {
     let mut map = HashMap::new();
+
+    for instruction in INSTRUCTION_LOOKUP.values() {
+        map.entry(instruction.opname)
+            .or_insert_with(Vec::new)
+            .push(instruction.clone());
+    }
 
     map
 }

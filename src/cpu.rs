@@ -1,4 +1,7 @@
 use crate::assembler::AddressingMode;
+use crate::assembler::INSTRUCTION_LOOKUP;
+use crate::assembler::Instruction;
+use crate::assembler::OpCode;
 use crate::memory::Memory;
 
 pub struct CPU {
@@ -39,58 +42,54 @@ impl CPU {
         let opcode = self.memory.read(self.pc);
         self.pc += 1;
 
+        let Instruction {
+            opname: op, mode, ..
+        } = INSTRUCTION_LOOKUP.get(&opcode).unwrap();
+
+        match (op, mode) {
+            (OpCode::LDA, _) => self.lda(mode),
+            (OpCode::LDX, _) => self.ldx(mode),
+            (OpCode::LDY, _) => self.ldy(mode),
+            (OpCode::STA, _) => self.sta(mode),
+            (OpCode::STX, _) => self.stx(mode),
+            (OpCode::STY, _) => self.sty(mode),
+            (OpCode::ADC, _) => self.adc(mode),
+            (OpCode::INX, _) => self.inx(),
+            (OpCode::INY, _) => self.iny(),
+            (OpCode::DEX, _) => self.dex(),
+            (OpCode::DEY, _) => self.dey(),
+            (OpCode::INC, _) => self.inc(mode),
+            (OpCode::DEC, _) => self.dec(mode),
+            (OpCode::SBC, _) => self.sbc(mode),
+            (OpCode::AND, _) => self.and(mode),
+            (OpCode::ORA, _) => self.ora(mode),
+            (OpCode::EOR, _) => self.eor(mode),
+            (OpCode::ASL, mode) if *mode == AddressingMode::Immediate => self.asl_accumulator(),
+            (OpCode::ASL, _) => self.asl(mode),
+            (OpCode::LSR, mode) if *mode == AddressingMode::Immediate => self.lsr_accumulator(),
+            (OpCode::LSR, _) => self.lsr(mode),
+            (OpCode::ROL, mode) if *mode == AddressingMode::Immediate => self.rol_accumulator(),
+            (OpCode::ROL, _) => self.rol(mode),
+            (OpCode::ROR, mode) if *mode == AddressingMode::Immediate => self.ror_accumulator(),
+            (OpCode::ROR, _) => self.ror(mode),
+            (OpCode::BRA, _) => self.branch(true),
+            (OpCode::BCS, _) => self.branch(self.get_carry_flag()),
+            (OpCode::BCC, _) => self.branch(!self.get_carry_flag()), // BCC (Branch if Carry Clear)
+            (OpCode::BMI, _) => self.branch(self.get_negative_flag()), // BMI (Branch if Minus)
+            (OpCode::BPL, _) => self.branch(!self.get_negative_flag()), // BPL (Branch if Plus)
+            (OpCode::BVC, _) => self.branch(!self.get_overflow_flag()), // BVC (Branch if Overflow Clear)
+            (OpCode::BVS, _) => self.branch(self.get_overflow_flag()), // BVS (Branch if Overflow Set)
+            (OpCode::CLC, _) => self.clear_carry(),                    // CLC
+            (OpCode::CLD, _) => self.clear_decimal(),                  // CLD
+            (OpCode::CLI, _) => self.clear_interrupt(),                // CLI
+            (OpCode::CLV, _) => self.clear_overflow(),                 // CLV
+            (OpCode::SEC, _) => self.set_carry(),                      // SEC
+            (OpCode::SED, _) => self.set_decimal(),                    // SED
+            (OpCode::SEI, _) => self.set_interrupt(),                  // SEI
+            _ => {}
+        }
+
         match opcode {
-            // LDA (Load Accumulator)
-            0xA9 => self.lda(&AddressingMode::Immediate),
-            0xA5 => self.lda(&AddressingMode::ZeroPage),
-            0xB5 => self.lda(&AddressingMode::ZeroPageX),
-            0xAD => self.lda(&AddressingMode::Absolute),
-            0xBD => self.lda(&AddressingMode::AbsoluteX),
-            0xB9 => self.lda(&AddressingMode::AbsoluteY),
-            0xA1 => self.lda(&AddressingMode::IndirectX),
-            0xB1 => self.lda(&AddressingMode::IndirectY),
-
-            // LDX (Load X Register)
-            0xA2 => self.ldx(&AddressingMode::Immediate),
-            0xA6 => self.ldx(&AddressingMode::ZeroPage),
-            0xB6 => self.ldx(&AddressingMode::ZeroPageY),
-            0xAE => self.ldx(&AddressingMode::Absolute),
-            0xBE => self.ldx(&AddressingMode::AbsoluteY),
-
-            // LDY (Load Y Register)
-            0xA0 => self.ldy(&AddressingMode::Immediate),
-            0xA4 => self.ldy(&AddressingMode::ZeroPage),
-            0xB4 => self.ldy(&AddressingMode::ZeroPageX),
-            0xAC => self.ldy(&AddressingMode::Absolute),
-            0xBC => self.ldy(&AddressingMode::AbsoluteX),
-
-            // STA (Store Accumulator)
-            0x85 => self.sta(&AddressingMode::ZeroPage),
-            0x95 => self.sta(&AddressingMode::ZeroPageX),
-            0x8D => self.sta(&AddressingMode::Absolute),
-            0x9D => self.sta(&AddressingMode::AbsoluteX),
-            0x99 => self.sta(&AddressingMode::AbsoluteY),
-            0x81 => self.sta(&AddressingMode::IndirectX),
-            0x91 => self.sta(&AddressingMode::IndirectY),
-
-            // STX (Store X Register)
-            0x86 => self.stx(&AddressingMode::ZeroPage),
-            0x96 => self.stx(&AddressingMode::ZeroPageY),
-            0x8E => self.stx(&AddressingMode::Absolute),
-
-            // STY (Store Y Register)
-            0x84 => self.sty(&AddressingMode::ZeroPage),
-            0x94 => self.sty(&AddressingMode::ZeroPageX),
-            0x8C => self.sty(&AddressingMode::Absolute),
-
-            0x69 => self.adc(&AddressingMode::Immediate),
-            0x65 => self.adc(&AddressingMode::ZeroPage),
-            0x75 => self.adc(&AddressingMode::ZeroPageX),
-            0x6D => self.adc(&AddressingMode::Absolute),
-            0x7D => self.adc(&AddressingMode::AbsoluteX),
-            0x79 => self.adc(&AddressingMode::AbsoluteY),
-            0x61 => self.adc(&AddressingMode::IndirectX),
-            0x71 => self.adc(&AddressingMode::IndirectY),
             0xC9 => {
                 // CMP Immediate
                 let value = self.memory.read(self.pc);
@@ -168,86 +167,6 @@ impl CPU {
                 // PLP
                 self.status = (self.pull() & 0b1110_1111) | 0b0010_0000; // Keep bit 5 set, ignore bit 4
             }
-            0xE8 => self.inx(),
-            0xC8 => self.iny(),
-            0xCA => self.dex(),
-            0x88 => self.dey(),
-            0xE6 => self.inc(&AddressingMode::ZeroPage),
-            0xF6 => self.inc(&AddressingMode::ZeroPageX),
-            0xEE => self.inc(&AddressingMode::Absolute),
-            0xFE => self.inc(&AddressingMode::AbsoluteX),
-            0xC6 => self.dec(&AddressingMode::ZeroPage),
-            0xD6 => self.dec(&AddressingMode::ZeroPageX),
-            0xCE => self.dec(&AddressingMode::Absolute),
-            0xDE => self.dec(&AddressingMode::AbsoluteX),
-            0xE9 => self.sbc(&AddressingMode::Immediate),
-            0xE5 => self.sbc(&AddressingMode::ZeroPage),
-            0xF5 => self.sbc(&AddressingMode::ZeroPageX),
-            0xED => self.sbc(&AddressingMode::Absolute),
-            0xFD => self.sbc(&AddressingMode::AbsoluteX),
-            0xF9 => self.sbc(&AddressingMode::AbsoluteY),
-            0xE1 => self.sbc(&AddressingMode::IndirectX),
-            0xF1 => self.sbc(&AddressingMode::IndirectY),
-            0x29 => self.and(&AddressingMode::Immediate),
-            0x25 => self.and(&AddressingMode::ZeroPage),
-            0x35 => self.and(&AddressingMode::ZeroPageX),
-            0x2D => self.and(&AddressingMode::Absolute),
-            0x3D => self.and(&AddressingMode::AbsoluteX),
-            0x39 => self.and(&AddressingMode::AbsoluteY),
-            0x21 => self.and(&AddressingMode::IndirectX),
-            0x31 => self.and(&AddressingMode::IndirectY),
-            0x09 => self.ora(&AddressingMode::Immediate),
-            0x05 => self.ora(&AddressingMode::ZeroPage),
-            0x15 => self.ora(&AddressingMode::ZeroPageX),
-            0x0D => self.ora(&AddressingMode::Absolute),
-            0x1D => self.ora(&AddressingMode::AbsoluteX),
-            0x19 => self.ora(&AddressingMode::AbsoluteY),
-            0x01 => self.ora(&AddressingMode::IndirectX),
-            0x11 => self.ora(&AddressingMode::IndirectY),
-            0x49 => self.eor(&AddressingMode::Immediate),
-            0x45 => self.eor(&AddressingMode::ZeroPage),
-            0x55 => self.eor(&AddressingMode::ZeroPageX),
-            0x4D => self.eor(&AddressingMode::Absolute),
-            0x5D => self.eor(&AddressingMode::AbsoluteX),
-            0x59 => self.eor(&AddressingMode::AbsoluteY),
-            0x41 => self.eor(&AddressingMode::IndirectX),
-            0x51 => self.eor(&AddressingMode::IndirectY),
-            0x0A => self.asl_accumulator(),
-            0x06 => self.asl(&AddressingMode::ZeroPage),
-            0x16 => self.asl(&AddressingMode::ZeroPageX),
-            0x0E => self.asl(&AddressingMode::Absolute),
-            0x1E => self.asl(&AddressingMode::AbsoluteX),
-            0x4A => self.lsr_accumulator(),
-            0x46 => self.lsr(&AddressingMode::ZeroPage),
-            0x56 => self.lsr(&AddressingMode::ZeroPageX),
-            0x4E => self.lsr(&AddressingMode::Absolute),
-            0x5E => self.lsr(&AddressingMode::AbsoluteX),
-            0x2A => self.rol_accumulator(),
-            0x26 => self.rol(&AddressingMode::ZeroPage),
-            0x36 => self.rol(&AddressingMode::ZeroPageX),
-            0x2E => self.rol(&AddressingMode::Absolute),
-            0x3E => self.rol(&AddressingMode::AbsoluteX),
-            0x6A => self.ror_accumulator(),
-            0x66 => self.ror(&AddressingMode::ZeroPage),
-            0x76 => self.ror(&AddressingMode::ZeroPageX),
-            0x6E => self.ror(&AddressingMode::Absolute),
-            0x7E => self.ror(&AddressingMode::AbsoluteX),
-            // Branch Instructions
-            0x80 => self.branch(true), // BRA (Branch always)
-            0xB0 => self.branch(self.get_carry_flag()), // BCS (Branch if Carry Set)
-            0x90 => self.branch(!self.get_carry_flag()), // BCC (Branch if Carry Clear)
-            0x30 => self.branch(self.get_negative_flag()), // BMI (Branch if Minus)
-            0x10 => self.branch(!self.get_negative_flag()), // BPL (Branch if Plus)
-            0x50 => self.branch(!self.get_overflow_flag()), // BVC (Branch if Overflow Clear)
-            0x70 => self.branch(self.get_overflow_flag()), // BVS (Branch if Overflow Set)
-            // Status Flag Changes
-            0x18 => self.clear_carry(),     // CLC
-            0xD8 => self.clear_decimal(),   // CLD
-            0x58 => self.clear_interrupt(), // CLI
-            0xB8 => self.clear_overflow(),  // CLV
-            0x38 => self.set_carry(),       // SEC
-            0xF8 => self.set_decimal(),     // SED
-            0x78 => self.set_interrupt(),   // SEI
             _ => {
                 println!(
                     "Opcode {:02X} at address {:04X} not implemented",
