@@ -1,6 +1,6 @@
 use std::collections::HashMap;
+use std::str::FromStr;
 
-// Addressing modes
 #[derive(Debug, PartialEq, Clone, Copy, Hash, Eq, PartialOrd, Ord)]
 pub enum AddressingMode {
     Implied,
@@ -16,97 +16,182 @@ pub enum AddressingMode {
     IndirectY,
 }
 
+use strum_macros::EnumString;
+
+#[allow(clippy::upper_case_acronyms)]
+#[derive(EnumString, Debug, PartialEq, Clone, Copy, Hash, Eq, PartialOrd, Ord)]
+pub enum OpCode {
+    LDA,
+    SBC,
+    INC,
+    DEC,
+    INX,
+    INY,
+    DEX,
+    DEY,
+    AND,
+    ORA,
+    EOR,
+    ASL,
+    LSR,
+    ROL,
+    ROR,
+    CLC,
+    SEI,
+    SED,
+    SEC,
+    CLV,
+    CLI,
+    CLD,
+    PLP,
+    PLA,
+    PHP,
+    PHA,
+    TXS,
+    TSX,
+    TYA,
+    TXA,
+    TAY,
+    TAX,
+    BRK,
+    RTS,
+    BVS,
+    BVC,
+    BPL,
+    BMI,
+    BCC,
+    BCS,
+    BNE,
+    BEQ,
+    CMP,
+    ADC,
+    STA,
+    STY,
+    STX,
+    LDY,
+    LDX,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy, Hash, Eq, PartialOrd, Ord)]
 pub struct Instruction {
+    opname: OpCode,
     opcode: u8,
     mode: AddressingMode,
     bytes: u8,
+    cycles: u8,
 }
 
-fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
-    let mut map = HashMap::new();
+use phf_macros::phf_map;
 
-    // LDA (Load Accumulator)
-    map.insert(
-        "LDA",
-        vec![
-            Instruction {
-                opcode: 0xA9,
-                mode: AddressingMode::Immediate,
-                bytes: 2,
-            },
-            Instruction {
+static INSTRUCTION_LOOKUP: phf::Map<u8, Instruction> = phf_map! {
+    0xA9u8 => Instruction {
+        opname: OpCode::LDA,
+        opcode: 0xA9,
+        mode: AddressingMode::Immediate,
+        bytes: 2,
+        cycles: 2,
+    },
+0xA5u8 => Instruction {
+    opname: OpCode::LDA,
                 opcode: 0xA5,
                 mode: AddressingMode::ZeroPage,
                 bytes: 2,
+                cycles: 3,
             },
+            0xB5u8 =>
             Instruction {
+                opname: OpCode::LDA,
                 opcode: 0xB5,
                 mode: AddressingMode::ZeroPageX,
                 bytes: 2,
+                cycles: 4,
             },
+            0xADu8 =>
             Instruction {
+                opname: OpCode::LDA,
                 opcode: 0xAD,
                 mode: AddressingMode::Absolute,
                 bytes: 3,
+                cycles: 4
             },
+            0xBDu8 =>
             Instruction {
+                opname: OpCode::LDA,
                 opcode: 0xBD,
                 mode: AddressingMode::AbsoluteX,
                 bytes: 3,
+                cycles: 4
             },
-            Instruction {
+            0xB9u8 =>  Instruction {
+                opname: OpCode::LDA,
                 opcode: 0xB9,
                 mode: AddressingMode::AbsoluteY,
                 bytes: 3,
+                cycles: 4
             },
-            Instruction {
+
+            0xA1u8 => Instruction {
+                opname: OpCode::LDA,
                 opcode: 0xA1,
                 mode: AddressingMode::IndirectX,
                 bytes: 2,
+                cycles: 6
             },
-            Instruction {
-                opcode: 0xB1,
-                mode: AddressingMode::IndirectY,
-                bytes: 2,
-            },
-        ],
-    );
 
-    // LDX (Load X Register)
-    map.insert(
-        "LDX",
-        vec![
-            Instruction {
+            0xB1u8 =>
+        Instruction {
+                opname: OpCode::LDA,
+            opcode: 0xB1,
+            mode: AddressingMode::IndirectY,
+            bytes: 2,
+                cycles: 5
+        },
+        0xA2u8 =>  Instruction {
                 opcode: 0xA2,
                 mode: AddressingMode::Immediate,
                 bytes: 2,
+                opname: OpCode::LDX,
+                cycles: 2,
             },
-            Instruction {
-                opcode: 0xA6,
-                mode: AddressingMode::ZeroPage,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xB6,
-                mode: AddressingMode::ZeroPageY,
-                bytes: 2,
-            },
-            Instruction {
-                opcode: 0xAE,
-                mode: AddressingMode::Absolute,
-                bytes: 3,
-            },
-            Instruction {
-                opcode: 0xBE,
-                mode: AddressingMode::AbsoluteY,
-                bytes: 3,
-            },
-        ],
-    );
+    0xA6u8 => Instruction {
+            opcode: 0xA6,
+            mode: AddressingMode::ZeroPage,
+            bytes: 2,
+            opname: OpCode::LDX,
+            cycles: 3,
+        },
+        0xB6u8 =>
+        Instruction {
+            opcode: 0xB6,
+            mode: AddressingMode::ZeroPageY,
+            bytes: 2,
+            opname: OpCode::LDX,
+            cycles: 4,
+        },
+        0xAEu8 =>
+        Instruction {
+            opcode: 0xAE,
+            mode: AddressingMode::Absolute,
+            bytes: 3,
+            opname: OpCode::LDX,
+            cycles: 4,
+        },
+        0xBEu8 =>
+        Instruction {
+            opcode: 0xBE,
+            mode: AddressingMode::AbsoluteY,
+            bytes: 3,
+            opname: OpCode::LDX,
+            cycles: 4,
+        },
+};
+
+pub fn create_opcode_map() -> HashMap<OpCode, Vec<Instruction>> {
+    let mut map = HashMap::new();
 
     // LDY (Load Y Register)
     map.insert(
-        "LDY",
+        OpCode::LDY,
         vec![
             Instruction {
                 opcode: 0xA0,
@@ -138,7 +223,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // STX (Store X Register)
     map.insert(
-        "STX",
+        OpCode::STX,
         vec![
             Instruction {
                 opcode: 0x86,
@@ -160,7 +245,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // STY (Store Y Register)
     map.insert(
-        "STY",
+        OpCode::STY,
         vec![
             Instruction {
                 opcode: 0x84,
@@ -182,7 +267,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // STA (Store Accumulator)
     map.insert(
-        "STA",
+        OpCode::STA,
         vec![
             Instruction {
                 opcode: 0x85,
@@ -224,12 +309,14 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // ADC (Add with Carry)
     map.insert(
-        "ADC",
+        OpCode::ADC,
         vec![
             Instruction {
+                opname: OpCode::ADC,
                 opcode: 0x69,
                 mode: AddressingMode::Immediate,
                 bytes: 2,
+                cycles: 2,
             },
             Instruction {
                 opcode: 0x65,
@@ -271,7 +358,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // CMP (Compare Accumulator)
     map.insert(
-        "CMP",
+        OpCode::CMP,
         vec![
             Instruction {
                 opcode: 0xC9,
@@ -318,7 +405,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Branch Instructions
     map.insert(
-        "BEQ",
+        OpCode::BEQ,
         vec![
             Instruction {
                 opcode: 0xF0,
@@ -329,7 +416,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "BNE",
+        OpCode::BNE,
         vec![
             Instruction {
                 opcode: 0xD0,
@@ -340,7 +427,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "BCS",
+        OpCode::BCS,
         vec![Instruction {
             opcode: 0xB0,
             mode: AddressingMode::Immediate,
@@ -348,7 +435,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     ); // Relative addressing
     map.insert(
-        "BCC",
+        OpCode::BCC,
         vec![Instruction {
             opcode: 0x90,
             mode: AddressingMode::Immediate,
@@ -356,7 +443,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     ); // Relative addressing
     map.insert(
-        "BMI",
+        OpCode::BMI,
         vec![Instruction {
             opcode: 0x30,
             mode: AddressingMode::Immediate,
@@ -364,7 +451,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     ); // Relative addressing
     map.insert(
-        "BPL",
+        OpCode::BPL,
         vec![Instruction {
             opcode: 0x10,
             mode: AddressingMode::Immediate,
@@ -372,7 +459,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     ); // Relative addressing
     map.insert(
-        "BVC",
+        OpCode::BVC,
         vec![Instruction {
             opcode: 0x50,
             mode: AddressingMode::Immediate,
@@ -380,7 +467,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     ); // Relative addressing
     map.insert(
-        "BVS",
+        OpCode::BVS,
         vec![Instruction {
             opcode: 0x70,
             mode: AddressingMode::Immediate,
@@ -390,7 +477,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Return Instructions
     map.insert(
-        "RTS",
+        OpCode::RTS,
         vec![Instruction {
             opcode: 0x60,
             mode: AddressingMode::Implied,
@@ -399,7 +486,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "BRK",
+        OpCode::BRK,
         vec![Instruction {
             opcode: 0x00,
             mode: AddressingMode::Implied,
@@ -409,7 +496,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Register Transfers
     map.insert(
-        "TAX",
+        OpCode::TAX,
         vec![Instruction {
             opcode: 0xAA,
             mode: AddressingMode::Implied,
@@ -418,7 +505,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "TAY",
+        OpCode::TAY,
         vec![Instruction {
             opcode: 0xA8,
             mode: AddressingMode::Implied,
@@ -427,7 +514,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "TXA",
+        OpCode::TXA,
         vec![Instruction {
             opcode: 0x8A,
             mode: AddressingMode::Implied,
@@ -436,7 +523,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "TYA",
+        OpCode::TYA,
         vec![Instruction {
             opcode: 0x98,
             mode: AddressingMode::Implied,
@@ -446,7 +533,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Stack Operations
     map.insert(
-        "TSX",
+        OpCode::TSX,
         vec![Instruction {
             opcode: 0xBA,
             mode: AddressingMode::Implied,
@@ -455,7 +542,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "TXS",
+        OpCode::TXS,
         vec![Instruction {
             opcode: 0x9A,
             mode: AddressingMode::Implied,
@@ -464,7 +551,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "PHA",
+        OpCode::PHA,
         vec![Instruction {
             opcode: 0x48,
             mode: AddressingMode::Implied,
@@ -473,7 +560,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "PHP",
+        OpCode::PHP,
         vec![Instruction {
             opcode: 0x08,
             mode: AddressingMode::Implied,
@@ -482,7 +569,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "PLA",
+        OpCode::PLA,
         vec![Instruction {
             opcode: 0x68,
             mode: AddressingMode::Implied,
@@ -491,7 +578,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "PLP",
+        OpCode::PLP,
         vec![Instruction {
             opcode: 0x28,
             mode: AddressingMode::Implied,
@@ -501,7 +588,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // SBC
     map.insert(
-        "SBC",
+        OpCode::SBC,
         vec![
             Instruction {
                 opcode: 0xE9,
@@ -548,7 +635,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // INC/DEC
     map.insert(
-        "INC",
+        OpCode::INC,
         vec![
             Instruction {
                 opcode: 0xE6,
@@ -574,7 +661,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
     );
 
     map.insert(
-        "DEC",
+        OpCode::DEC,
         vec![
             Instruction {
                 opcode: 0xC6,
@@ -601,7 +688,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Single byte instructions
     map.insert(
-        "INX",
+        OpCode::INX,
         vec![Instruction {
             opcode: 0xE8,
             mode: AddressingMode::Implied,
@@ -609,7 +696,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "INY",
+        OpCode::INY,
         vec![Instruction {
             opcode: 0xC8,
             mode: AddressingMode::Implied,
@@ -617,7 +704,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "DEX",
+        OpCode::DEX,
         vec![Instruction {
             opcode: 0xCA,
             mode: AddressingMode::Implied,
@@ -625,7 +712,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "DEY",
+        OpCode::DEY,
         vec![Instruction {
             opcode: 0x88,
             mode: AddressingMode::Implied,
@@ -635,7 +722,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // AND (Logical AND)
     map.insert(
-        "AND",
+        OpCode::AND,
         vec![
             Instruction {
                 opcode: 0x29,
@@ -682,7 +769,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // ORA (Logical OR)
     map.insert(
-        "ORA",
+        OpCode::ORA,
         vec![
             Instruction {
                 opcode: 0x09,
@@ -729,7 +816,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // EOR (Exclusive OR)
     map.insert(
-        "EOR",
+        OpCode::EOR,
         vec![
             Instruction {
                 opcode: 0x49,
@@ -776,7 +863,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // ASL (Arithmetic Shift Left)
     map.insert(
-        "ASL",
+        OpCode::ASL,
         vec![
             Instruction {
                 opcode: 0x0A,
@@ -808,7 +895,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // LSR (Logical Shift Right)
     map.insert(
-        "LSR",
+        OpCode::LSR,
         vec![
             Instruction {
                 opcode: 0x4A,
@@ -840,7 +927,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // ROL (Rotate Left)
     map.insert(
-        "ROL",
+        OpCode::ROL,
         vec![
             Instruction {
                 opcode: 0x2A,
@@ -872,7 +959,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // ROR (Rotate Right)
     map.insert(
-        "ROR",
+        OpCode::ROR,
         vec![
             Instruction {
                 opcode: 0x6A,
@@ -904,7 +991,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 
     // Status Flag Changes
     map.insert(
-        "CLC",
+        OpCode::CLC,
         vec![Instruction {
             opcode: 0x18,
             mode: AddressingMode::Implied,
@@ -912,7 +999,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "CLD",
+        OpCode::CLD,
         vec![Instruction {
             opcode: 0xD8,
             mode: AddressingMode::Implied,
@@ -920,7 +1007,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "CLI",
+        OpCode::CLI,
         vec![Instruction {
             opcode: 0x58,
             mode: AddressingMode::Implied,
@@ -928,7 +1015,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "CLV",
+        OpCode::CLV,
         vec![Instruction {
             opcode: 0xB8,
             mode: AddressingMode::Implied,
@@ -936,7 +1023,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "SEC",
+        OpCode::SEC,
         vec![Instruction {
             opcode: 0x38,
             mode: AddressingMode::Implied,
@@ -944,7 +1031,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "SED",
+        OpCode::SED,
         vec![Instruction {
             opcode: 0xF8,
             mode: AddressingMode::Implied,
@@ -952,7 +1039,7 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
         }],
     );
     map.insert(
-        "SEI",
+        OpCode::SEI,
         vec![Instruction {
             opcode: 0x78,
             mode: AddressingMode::Implied,
@@ -964,17 +1051,17 @@ fn create_opcode_map() -> HashMap<&'static str, Vec<Instruction>> {
 }
 
 fn parse_operand(operand: &str) -> (AddressingMode, u16) {
-    if operand.starts_with('#') {
+    if let Some(stripped) = operand.strip_prefix('#') {
         // Immediate addressing - handle both #$2A and #42 formats
-        let value_str = operand[1..].trim_start_matches('$');
+        let value_str = stripped.trim_start_matches('$');
         let value = u16::from_str_radix(value_str, 16).unwrap_or_else(|_| {
             // Try parsing as decimal if hex fails
             value_str.parse::<u16>().unwrap_or(0)
         });
         (AddressingMode::Immediate, value)
-    } else if operand.starts_with('$') {
+    } else if let Some(stripped) = operand.strip_prefix('$') {
         // Absolute or ZeroPage addressing
-        let value = u16::from_str_radix(&operand[1..], 16).unwrap_or(0);
+        let value = u16::from_str_radix(stripped, 16).unwrap_or(0);
         if value <= 0xFF {
             (AddressingMode::ZeroPage, value)
         } else {
@@ -999,9 +1086,9 @@ pub fn assemble(source: &str) -> Vec<u8> {
         }
 
         let parts: Vec<&str> = line.split_whitespace().collect();
-        let mnemonic = parts[0].to_uppercase();
+        let mnemonic = OpCode::from_str(&parts[0].to_uppercase()).unwrap();
 
-        if let Some(instructions) = opcodes.get(mnemonic.as_str()) {
+        if let Some(instructions) = opcodes.get(&mnemonic) {
             if parts.len() > 1 {
                 let (mode, value) = parse_operand(parts[1]);
 

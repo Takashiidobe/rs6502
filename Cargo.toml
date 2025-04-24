@@ -4,3 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
+phf = { version = "0.11.3", features = ["phf_macros"] }
+phf_macros = "0.11.3"
+strum = { version = "0.27.1", features = ["strum_macros"] }
+strum_macros = "0.27.1"

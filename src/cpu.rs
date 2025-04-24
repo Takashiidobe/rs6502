@@ -41,60 +41,21 @@ impl CPU {
 
         match opcode {
             // LDA (Load Accumulator)
-            0xA9 => {
-                let value = self.get_operand(&AddressingMode::Immediate);
-                self.lda(value);
-            }
-            0xA5 => {
-                let value = self.get_operand(&AddressingMode::ZeroPage);
-                self.lda(value);
-            }
-            0xB5 => {
-                let value = self.get_operand(&AddressingMode::ZeroPageX);
-                self.lda(value);
-            }
-            0xAD => {
-                let value = self.get_operand(&AddressingMode::Absolute);
-                self.lda(value);
-            }
-            0xBD => {
-                let value = self.get_operand(&AddressingMode::AbsoluteX);
-                self.lda(value);
-            }
-            0xB9 => {
-                let value = self.get_operand(&AddressingMode::AbsoluteY);
-                self.lda(value);
-            }
-            0xA1 => {
-                let value = self.get_operand(&AddressingMode::IndirectX);
-                self.lda(value);
-            }
-            0xB1 => {
-                let value = self.get_operand(&AddressingMode::IndirectY);
-                self.lda(value);
-            }
+            0xA9 => self.lda(&AddressingMode::Immediate),
+            0xA5 => self.lda(&AddressingMode::ZeroPage),
+            0xB5 => self.lda(&AddressingMode::ZeroPageX),
+            0xAD => self.lda(&AddressingMode::Absolute),
+            0xBD => self.lda(&AddressingMode::AbsoluteX),
+            0xB9 => self.lda(&AddressingMode::AbsoluteY),
+            0xA1 => self.lda(&AddressingMode::IndirectX),
+            0xB1 => self.lda(&AddressingMode::IndirectY),
 
             // LDX (Load X Register)
-            0xA2 => {
-                let value = self.get_operand(&AddressingMode::Immediate);
-                self.ldx(value);
-            }
-            0xA6 => {
-                let value = self.get_operand(&AddressingMode::ZeroPage);
-                self.ldx(value);
-            }
-            0xB6 => {
-                let value = self.get_operand(&AddressingMode::ZeroPageY);
-                self.ldx(value);
-            }
-            0xAE => {
-                let value = self.get_operand(&AddressingMode::Absolute);
-                self.ldx(value);
-            }
-            0xBE => {
-                let value = self.get_operand(&AddressingMode::AbsoluteY);
-                self.ldx(value);
-            }
+            0xA2 => self.ldx(&AddressingMode::Immediate),
+            0xA6 => self.ldx(&AddressingMode::ZeroPage),
+            0xB6 => self.ldx(&AddressingMode::ZeroPageY),
+            0xAE => self.ldx(&AddressingMode::Absolute),
+            0xBE => self.ldx(&AddressingMode::AbsoluteY),
 
             // LDY (Load Y Register)
             0xA0 => self.ldy(&AddressingMode::Immediate),
@@ -104,18 +65,18 @@ impl CPU {
             0xBC => self.ldy(&AddressingMode::AbsoluteX),
 
             // STA (Store Accumulator)
-            0x85 => self.sta(self.get_operand_address(&AddressingMode::ZeroPage)),
-            0x95 => self.sta(self.get_operand_address(&AddressingMode::ZeroPageX)),
-            0x8D => self.sta(self.get_operand_address(&AddressingMode::Absolute)),
-            0x9D => self.sta(self.get_operand_address(&AddressingMode::AbsoluteX)),
-            0x99 => self.sta(self.get_operand_address(&AddressingMode::AbsoluteY)),
-            0x81 => self.sta(self.get_operand_address(&AddressingMode::IndirectX)),
-            0x91 => self.sta(self.get_operand_address(&AddressingMode::IndirectY)),
+            0x85 => self.sta(&AddressingMode::ZeroPage),
+            0x95 => self.sta(&AddressingMode::ZeroPageX),
+            0x8D => self.sta(&AddressingMode::Absolute),
+            0x9D => self.sta(&AddressingMode::AbsoluteX),
+            0x99 => self.sta(&AddressingMode::AbsoluteY),
+            0x81 => self.sta(&AddressingMode::IndirectX),
+            0x91 => self.sta(&AddressingMode::IndirectY),
 
             // STX (Store X Register)
-            0x86 => self.stx(self.get_operand_address(&AddressingMode::ZeroPage)),
-            0x96 => self.stx(self.get_operand_address(&AddressingMode::ZeroPageY)),
-            0x8E => self.stx(self.get_operand_address(&AddressingMode::Absolute)),
+            0x86 => self.stx(&AddressingMode::ZeroPage),
+            0x96 => self.stx(&AddressingMode::ZeroPageY),
+            0x8E => self.stx(&AddressingMode::Absolute),
 
             // STY (Store Y Register)
             0x84 => self.sty(&AddressingMode::ZeroPage),
@@ -188,10 +149,7 @@ impl CPU {
                 self.set_zero_flag(self.x);
                 self.set_negative_flag(self.x);
             }
-            0x9A => {
-                // TXS
-                self.sp = self.x;
-            }
+            0x9A => self.sp = self.x, // TXS
             0x48 => {
                 // PHA
                 self.push(self.a);
@@ -436,13 +394,15 @@ impl CPU {
 }
 
 impl CPU {
-    pub fn lda(&mut self, value: u8) {
+    pub fn lda(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
         self.a = value;
         self.set_zero_flag(self.a);
         self.set_negative_flag(self.a);
     }
 
-    pub fn ldx(&mut self, value: u8) {
+    pub fn ldx(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
         self.x = value;
         self.set_zero_flag(self.x);
         self.set_negative_flag(self.x);
