@@ -55,6 +55,7 @@ pub enum OpCode {
     TAX,
     BRK,
     RTS,
+    BRA,
     BVS,
     BVC,
     BPL,

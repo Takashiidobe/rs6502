@@ -86,87 +86,20 @@ impl CPU {
             (OpCode::SEC, _) => self.set_carry(),                      // SEC
             (OpCode::SED, _) => self.set_decimal(),                    // SED
             (OpCode::SEI, _) => self.set_interrupt(),                  // SEI
-            _ => {}
-        }
-
-        match opcode {
-            0xC9 => {
-                // CMP Immediate
-                let value = self.memory.read(self.pc);
-                self.pc += 1;
-                let result = self.a.wrapping_sub(value);
-                self.set_carry_flag(self.a >= value);
-                self.set_zero_flag(result);
-                self.set_negative_flag(result);
-            }
-            0xF0 => {
-                // BEQ Relative
-                let offset = self.memory.read(self.pc) as i8;
-                self.pc += 1;
-                if self.get_zero_flag() {
-                    let jump_addr = ((self.pc as i32) + (offset as i32)) as u16;
-                    self.pc = jump_addr;
-                }
-            }
-            0x60 => {
-                // RTS
-                // For now, just halt since we haven't implemented the stack
-                self.halted = true;
-            }
-            0x00 => {
-                // BRK
-                self.set_break_flag(true);
-                self.halted = true;
-            }
-            0xAA => {
-                // TAX
-                self.x = self.a;
-                self.set_zero_flag(self.x);
-                self.set_negative_flag(self.x);
-            }
-            0xA8 => {
-                // TAY
-                self.y = self.a;
-                self.set_zero_flag(self.y);
-                self.set_negative_flag(self.y);
-            }
-            0x8A => {
-                // TXA
-                self.a = self.x;
-                self.set_zero_flag(self.a);
-                self.set_negative_flag(self.a);
-            }
-            0x98 => {
-                // TYA
-                self.a = self.y;
-                self.set_zero_flag(self.a);
-                self.set_negative_flag(self.a);
-            }
-            0xBA => {
-                // TSX
-                self.x = self.sp;
-                self.set_zero_flag(self.x);
-                self.set_negative_flag(self.x);
-            }
-            0x9A => self.sp = self.x, // TXS
-            0x48 => {
-                // PHA
-                self.push(self.a);
-            }
-            0x08 => {
-                // PHP
-                self.push(self.status | 0b0011_0000); // Set bits 4 and 5 when pushing
-            }
-            0x68 => {
-                // PLA
-                self.a = self.pull();
-                self.set_zero_flag(self.a);
-                self.set_negative_flag(self.a);
-            }
-            0x28 => {
-                // PLP
-                self.status = (self.pull() & 0b1110_1111) | 0b0010_0000; // Keep bit 5 set, ignore bit 4
-            }
+            (OpCode::BRK, _) => self.brk(),
+            (OpCode::PLP, _) => self.plp(),
+            (OpCode::PLA, _) => self.pla(),
+            (OpCode::TXS, _) => self.txs(),
+            (OpCode::TYA, _) => self.tya(),
+            (OpCode::TSX, _) => self.tsx(),
+            (OpCode::TAY, _) => self.tay(),
+            (OpCode::TXA, _) => self.txa(),
+            (OpCode::TAX, _) => self.tax(),
+            (OpCode::RTS, _) => self.rts(),
+            (OpCode::PHP, _) => self.php(),
+            (OpCode::PHA, _) => self.pha(),
+            (OpCode::CMP, _) => self.cmp(),
+            (OpCode::BEQ, _) => self.beq(),
             _ => {
                 println!(
                     "Opcode {:02X} at address {:04X} not implemented",
@@ -176,6 +109,81 @@ impl CPU {
                 self.halted = true;
             }
         }
+    }
+
+    fn beq(&mut self) {
+        let offset = self.memory.read(self.pc) as i8;
+        self.pc += 1;
+        if self.get_zero_flag() {
+            let jump_addr = ((self.pc as i32) + (offset as i32)) as u16;
+            self.pc = jump_addr;
+        }
+    }
+
+    fn cmp(&mut self) {
+        let value = self.memory.read(self.pc);
+        self.pc += 1;
+        let result = self.a.wrapping_sub(value);
+        self.set_carry_flag(self.a >= value);
+        self.set_zero_flag(result);
+        self.set_negative_flag(result);
+    }
+
+    fn tax(&mut self) {
+        self.x = self.a;
+        self.set_zero_flag(self.x);
+        self.set_negative_flag(self.x);
+    }
+    fn tay(&mut self) {
+        self.y = self.a;
+        self.set_zero_flag(self.y);
+        self.set_negative_flag(self.y);
+    }
+    fn txa(&mut self) {
+        self.a = self.x;
+        self.set_zero_flag(self.a);
+        self.set_negative_flag(self.a);
+    }
+    fn tya(&mut self) {
+        self.a = self.y;
+        self.set_zero_flag(self.a);
+        self.set_negative_flag(self.a);
+    }
+    fn tsx(&mut self) {
+        self.x = self.sp;
+        self.set_zero_flag(self.x);
+        self.set_negative_flag(self.x);
+    }
+
+    fn rts(&mut self) {
+        self.halted = true;
+    }
+
+    fn pla(&mut self) {
+        self.a = self.pull();
+        self.set_zero_flag(self.a);
+        self.set_negative_flag(self.a);
+    }
+
+    fn txs(&mut self) {
+        self.sp = self.x;
+    }
+
+    fn pha(&mut self) {
+        self.push(self.a);
+    }
+
+    fn php(&mut self) {
+        self.push(self.status | 0b0011_0000);
+    }
+
+    fn plp(&mut self) {
+        self.status = (self.pull() & 0b1110_1111) | 0b0010_0000;
+    }
+
+    fn brk(&mut self) {
+        self.set_break_flag(true);
+        self.halted = true;
     }
 
     fn adc(&mut self, mode: &AddressingMode) {
@@ -310,9 +318,7 @@ impl CPU {
     fn set_interrupt(&mut self) {
         self.set_interrupt_disable_flag(true);
     }
-}
 
-impl CPU {
     pub fn lda(&mut self, mode: &AddressingMode) {
         let value = self.get_operand(mode);
         self.a = value;
