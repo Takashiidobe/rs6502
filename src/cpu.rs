@@ -1,16 +1,15 @@
-use crate::memory::Memory;
 use crate::assembler::AddressingMode;
-
+use crate::memory::Memory;
 
 pub struct CPU {
-    pub a: u8, // Accumulator
-    pub x: u8, // X Register
-    pub y: u8, // Y Register
-    pub pc: u16, // Program Counter
-    pub sp: u8, // Stack Pointer
-    pub status: u8, // Status Register
+    pub a: u8,          // Accumulator
+    pub x: u8,          // X Register
+    pub y: u8,          // Y Register
+    pub pc: u16,        // Program Counter
+    pub sp: u8,         // Stack Pointer
+    pub status: u8,     // Status Register
     pub memory: Memory, // Memory instance
-    pub halted: bool, // Flag to indicate if CPU execution should stop
+    pub halted: bool,   // Flag to indicate if CPU execution should stop
 }
 
 impl CPU {
@@ -18,9 +17,9 @@ impl CPU {
         Self {
             a: 0,
             x: 0,
-            y: 0, // 
+            y: 0,       //
             pc: 0x0000, // 16-bit program counter
-            sp: 0xFF, // 16-bit stack pointer
+            sp: 0xFF,   // 16-bit stack pointer
             status: 0,
             memory,
             halted: false, // Initialize halted to false
@@ -98,26 +97,11 @@ impl CPU {
             }
 
             // LDY (Load Y Register)
-            0xA0 => {
-                let value = self.get_operand(&AddressingMode::Immediate);
-                self.ldy(value);
-            }
-            0xA4 => {
-                let value = self.get_operand(&AddressingMode::ZeroPage);
-                self.ldy(value);
-            }
-            0xB4 => {
-                let value = self.get_operand(&AddressingMode::ZeroPageX);
-                self.ldy(value);
-            }
-            0xAC => {
-                let value = self.get_operand(&AddressingMode::Absolute);
-                self.ldy(value);
-            }
-            0xBC => {
-                let value = self.get_operand(&AddressingMode::AbsoluteX);
-                self.ldy(value);
-            }
+            0xA0 => self.ldy(&AddressingMode::Immediate),
+            0xA4 => self.ldy(&AddressingMode::ZeroPage),
+            0xB4 => self.ldy(&AddressingMode::ZeroPageX),
+            0xAC => self.ldy(&AddressingMode::Absolute),
+            0xBC => self.ldy(&AddressingMode::AbsoluteX),
 
             // STA (Store Accumulator)
             0x85 => self.sta(self.get_operand_address(&AddressingMode::ZeroPage)),
@@ -134,9 +118,9 @@ impl CPU {
             0x8E => self.stx(self.get_operand_address(&AddressingMode::Absolute)),
 
             // STY (Store Y Register)
-            0x84 => self.sty(self.get_operand_address(&AddressingMode::ZeroPage)),
-            0x94 => self.sty(self.get_operand_address(&AddressingMode::ZeroPageX)),
-            0x8C => self.sty(self.get_operand_address(&AddressingMode::Absolute)),
+            0x84 => self.sty(&AddressingMode::ZeroPage),
+            0x94 => self.sty(&AddressingMode::ZeroPageX),
+            0x8C => self.sty(&AddressingMode::Absolute),
 
             0x69 => self.adc(&AddressingMode::Immediate),
             0x65 => self.adc(&AddressingMode::ZeroPage),
@@ -146,7 +130,8 @@ impl CPU {
             0x79 => self.adc(&AddressingMode::AbsoluteY),
             0x61 => self.adc(&AddressingMode::IndirectX),
             0x71 => self.adc(&AddressingMode::IndirectY),
-            0xC9 => { // CMP Immediate
+            0xC9 => {
+                // CMP Immediate
                 let value = self.memory.read(self.pc);
                 self.pc += 1;
                 let result = self.a.wrapping_sub(value);
@@ -154,7 +139,8 @@ impl CPU {
                 self.set_zero_flag(result);
                 self.set_negative_flag(result);
             }
-            0xF0 => { // BEQ Relative
+            0xF0 => {
+                // BEQ Relative
                 let offset = self.memory.read(self.pc) as i8;
                 self.pc += 1;
                 if self.get_zero_flag() {
@@ -162,54 +148,66 @@ impl CPU {
                     self.pc = jump_addr;
                 }
             }
-            0x60 => { // RTS
+            0x60 => {
+                // RTS
                 // For now, just halt since we haven't implemented the stack
                 self.halted = true;
             }
-            0x00 => { // BRK
+            0x00 => {
+                // BRK
                 self.set_break_flag(true);
                 self.halted = true;
             }
-            0xAA => { // TAX
+            0xAA => {
+                // TAX
                 self.x = self.a;
                 self.set_zero_flag(self.x);
                 self.set_negative_flag(self.x);
             }
-            0xA8 => { // TAY
+            0xA8 => {
+                // TAY
                 self.y = self.a;
                 self.set_zero_flag(self.y);
                 self.set_negative_flag(self.y);
             }
-            0x8A => { // TXA
+            0x8A => {
+                // TXA
                 self.a = self.x;
                 self.set_zero_flag(self.a);
                 self.set_negative_flag(self.a);
             }
-            0x98 => { // TYA
+            0x98 => {
+                // TYA
                 self.a = self.y;
                 self.set_zero_flag(self.a);
                 self.set_negative_flag(self.a);
             }
-            0xBA => { // TSX
+            0xBA => {
+                // TSX
                 self.x = self.sp;
                 self.set_zero_flag(self.x);
                 self.set_negative_flag(self.x);
             }
-            0x9A => { // TXS
+            0x9A => {
+                // TXS
                 self.sp = self.x;
             }
-            0x48 => { // PHA
+            0x48 => {
+                // PHA
                 self.push(self.a);
             }
-            0x08 => { // PHP
+            0x08 => {
+                // PHP
                 self.push(self.status | 0b0011_0000); // Set bits 4 and 5 when pushing
             }
-            0x68 => { // PLA
+            0x68 => {
+                // PLA
                 self.a = self.pull();
                 self.set_zero_flag(self.a);
                 self.set_negative_flag(self.a);
             }
-            0x28 => { // PLP
+            0x28 => {
+                // PLP
                 self.status = (self.pull() & 0b1110_1111) | 0b0010_0000; // Keep bit 5 set, ignore bit 4
             }
             0xE8 => self.inx(),
@@ -232,12 +230,6 @@ impl CPU {
             0xF9 => self.sbc(&AddressingMode::AbsoluteY),
             0xE1 => self.sbc(&AddressingMode::IndirectX),
             0xF1 => self.sbc(&AddressingMode::IndirectY),
-            0x80 => { // BRA (Branch Always)
-                let offset = self.memory.read(self.pc) as i8; // Read signed offset
-                self.pc += 1; // Increment program counter
-                let jump_addr = ((self.pc as i32) + (offset as i32)) as u16; // Calculate new address
-                self.pc = jump_addr; // Update program counter
-            }
             0x29 => self.and(&AddressingMode::Immediate),
             0x25 => self.and(&AddressingMode::ZeroPage),
             0x35 => self.and(&AddressingMode::ZeroPageX),
@@ -283,6 +275,7 @@ impl CPU {
             0x6E => self.ror(&AddressingMode::Absolute),
             0x7E => self.ror(&AddressingMode::AbsoluteX),
             // Branch Instructions
+            0x80 => self.branch(true), // BRA (Branch always)
             0xB0 => self.branch(self.get_carry_flag()), // BCS (Branch if Carry Set)
             0x90 => self.branch(!self.get_carry_flag()), // BCC (Branch if Carry Clear)
             0x30 => self.branch(self.get_negative_flag()), // BMI (Branch if Minus)
@@ -290,15 +283,19 @@ impl CPU {
             0x50 => self.branch(!self.get_overflow_flag()), // BVC (Branch if Overflow Clear)
             0x70 => self.branch(self.get_overflow_flag()), // BVS (Branch if Overflow Set)
             // Status Flag Changes
-            0x18 => self.clear_carry(),       // CLC
-            0xD8 => self.clear_decimal(),    // CLD
-            0x58 => self.clear_interrupt(),  // CLI
-            0xB8 => self.clear_overflow(),   // CLV
-            0x38 => self.set_carry(),        // SEC
-            0xF8 => self.set_decimal(),      // SED
-            0x78 => self.set_interrupt(),    // SEI
+            0x18 => self.clear_carry(),     // CLC
+            0xD8 => self.clear_decimal(),   // CLD
+            0x58 => self.clear_interrupt(), // CLI
+            0xB8 => self.clear_overflow(),  // CLV
+            0x38 => self.set_carry(),       // SEC
+            0xF8 => self.set_decimal(),     // SED
+            0x78 => self.set_interrupt(),   // SEI
             _ => {
-                println!("Opcode {:02X} at address {:04X} not implemented", opcode, self.pc - 1);
+                println!(
+                    "Opcode {:02X} at address {:04X} not implemented",
+                    opcode,
+                    self.pc - 1
+                );
                 self.halted = true;
             }
         }
@@ -308,11 +305,11 @@ impl CPU {
         let value = self.get_operand(mode);
         let carry = self.get_carry_flag() as u16;
         let sum = self.a as u16 + value as u16 + carry;
-        
+
         self.set_carry_flag(sum > 0xFF);
         let result = sum as u8;
         self.set_overflow_flag(((self.a ^ result) & (value ^ result) & 0x80) != 0);
-        
+
         self.a = result;
         self.update_zero_and_negative_flags(self.a);
     }
@@ -438,7 +435,6 @@ impl CPU {
     }
 }
 
-
 impl CPU {
     pub fn lda(&mut self, value: u8) {
         self.a = value;
@@ -452,22 +448,23 @@ impl CPU {
         self.set_negative_flag(self.x);
     }
 
-    pub fn ldy(&mut self, value: u8) {
+    pub fn ldy(&mut self, mode: &AddressingMode) {
+        let value = self.get_operand(mode);
         self.y = value;
         self.set_zero_flag(self.y);
         self.set_negative_flag(self.y);
     }
 
-    pub fn sta(&mut self, address: u16) {
-        self.memory.write(address, self.a);
+    pub fn sta(&mut self, mode: &AddressingMode) {
+        self.memory.write(self.get_operand_address(mode), self.a);
     }
 
-    pub fn stx(&mut self, address: u16) {
-        self.memory.write(address, self.x);
+    pub fn stx(&mut self, mode: &AddressingMode) {
+        self.memory.write(self.get_operand_address(mode), self.x);
     }
 
-    pub fn sty(&mut self, address: u16) {
-        self.memory.write(address, self.y);
+    pub fn sty(&mut self, mode: &AddressingMode) {
+        self.memory.write(self.get_operand_address(mode), self.y);
     }
 
     fn set_flag(&mut self, mask: u8) {
@@ -562,7 +559,6 @@ impl CPU {
         self.status & 0b0000_0001 != 0
     }
 
-    // Add these new helper methods for stack operations
     fn push(&mut self, value: u8) {
         self.memory.write(0x0100 + self.sp as u16, value);
         self.sp = self.sp.wrapping_sub(1);
@@ -577,10 +573,10 @@ impl CPU {
         let value = self.get_operand(mode);
         let carry = self.get_carry_flag() as u8;
         let result = self.a.wrapping_sub(value).wrapping_sub(carry);
-        
+
         self.set_carry_flag(self.a >= value);
         self.set_overflow_flag((self.a ^ value) & (self.a ^ result) & 0x80 != 0);
-        
+
         self.a = result;
         self.update_zero_and_negative_flags(self.a);
     }
@@ -637,9 +633,7 @@ impl CPU {
 
     fn get_operand_address(&self, mode: &AddressingMode) -> u16 {
         match mode {
-            AddressingMode::ZeroPage => {
-                self.memory.read(self.pc) as u16
-            }
+            AddressingMode::ZeroPage => self.memory.read(self.pc) as u16,
             AddressingMode::ZeroPageX => {
                 let pos = self.memory.read(self.pc);
                 pos.wrapping_add(self.x) as u16
@@ -648,9 +642,7 @@ impl CPU {
                 let pos = self.memory.read(self.pc);
                 pos.wrapping_add(self.y) as u16
             }
-            AddressingMode::Absolute => {
-                self.memory.read_u16(self.pc)
-            }
+            AddressingMode::Absolute => self.memory.read_u16(self.pc),
             AddressingMode::AbsoluteX => {
                 let base = self.memory.read_u16(self.pc);
                 base.wrapping_add(self.x as u16)

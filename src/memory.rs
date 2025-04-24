@@ -6,7 +6,7 @@ pub struct Memory {
 impl Default for Memory {
     fn default() -> Self {
         Memory::new()
-    } 
+    }
 }
 
 impl Memory {
@@ -28,7 +28,7 @@ impl Memory {
         let low = self.read(address) as u16;
         let high = self.read(address + 1) as u16;
         (high << 8) | low
-    } 
+    }
 
     pub fn write_u16(&mut self, address: u16, value: u16) {
         self.write(address, (value & 0x00FF) as u8);

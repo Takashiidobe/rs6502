@@ -2,9 +2,9 @@ use std::env;
 use std::fs;
 use std::process;
 
-mod memory;
-mod cpu;
 mod assembler;
+mod cpu;
+mod memory;
 
 use cpu::CPU;
 use memory::Memory;
@@ -31,17 +31,20 @@ fn main() {
     memory.write_u16(0xFFFC, PROGRAM_START_ADDRESS);
 
     let mut cpu = CPU::new(memory);
-    cpu.reset(); 
+    cpu.reset();
 
     println!("Starting execution...");
     loop {
-        println!("PC: {:04X}, A: {:02X}, X: {:02X}, Y: {:02X}, SP: {:02X}, Status: {:02X}", cpu.pc, cpu.a, cpu.x, cpu.y, cpu.sp, cpu.status);
+        println!(
+            "PC: {:04X}, A: {:02X}, X: {:02X}, Y: {:02X}, SP: {:02X}, Status: {:02X}",
+            cpu.pc, cpu.a, cpu.x, cpu.y, cpu.sp, cpu.status
+        );
 
         cpu.execute_instruction();
 
         if cpu.halted {
             println!("Execution halted. Final accumulator value: {}", cpu.a);
-            process::exit(cpu.a as i32);  // Use accumulator value as exit code
+            process::exit(cpu.a as i32); // Use accumulator value as exit code
         }
     }
 }
